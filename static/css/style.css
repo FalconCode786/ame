@@ -3583,7 +3583,7 @@ img {
     }
     
     .nav-toggle {
-        display: block;
+        display: none;
     }
     
     .hero-title {
