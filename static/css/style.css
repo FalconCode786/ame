@@ -3565,7 +3565,7 @@ img {
     }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 600px) {
     .nav-menu {
         display: none;
         position: absolute;
