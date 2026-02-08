@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Product - Al Muslim Engineers{% endblock %}
+
+{% block content %}
+<section class="admin-section">
+    <div class="admin-sidebar">
+        <div class="sidebar-header">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo">
+            <h3>Admin Portal</h3>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('admin_dashboard') }}" class="sidebar-link">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+            <a href="{{ url_for('admin_products') }}" class="sidebar-link active">
+                <i class="fas fa-box"></i> Products
+            </a>
+            <a href="{{ url_for('admin_applications') }}" class="sidebar-link">
+                <i class="fas fa-file-alt"></i> Applications
+            </a>
+            <a href="{{ url_for('admin_orders') }}" class="sidebar-link">
+                <i class="fas fa-shopping-bag"></i> Orders
+            </a>
+            <a href="{{ url_for('admin_maintenance') }}" class="sidebar-link">
+                <i class="fas fa-tools"></i> Maintenance
+            </a>
+            <a href="{{ url_for('admin_gallery') }}" class="sidebar-link">
+                <i class="fas fa-images"></i> Gallery
+            </a>
+            <a href="{{ url_for('admin_feedback') }}" class="sidebar-link">
+                <i class="fas fa-comments"></i> Feedback
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <a href="{{ url_for('logout') }}" class="sidebar-link">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </div>
+    
+    <div class="admin-main">
+        <div class="admin-header">
+            <h1><i class="fas fa-plus-circle"></i> Add Product</h1>
+        </div>
+        
+        <div class="admin-card">
+            <form method="POST" enctype="multipart/form-data" class="admin-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="name">Product Name <span class="required">*</span></label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="category">Category <span class="required">*</span></label>
+                        <select id="category" name="category" required>
+                            <option value="">Select Category</option>
+                            <option value="panel">Solar Panel</option>
+                            <option value="inverter">Inverter</option>
+                            <option value="battery">Battery</option>
+                            <option value="controller">Charge Controller</option>
+                            <option value="mounting">Mounting Structure</option>
+                            <option value="cables">Cables & Connectors</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="price">Price (PKR) <span class="required">*</span></label>
+                        <input type="number" id="price" name="price" min="0" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="stock_quantity">Stock Quantity <span class="required">*</span></label>
+                        <input type="number" id="stock_quantity" name="stock_quantity" min="0" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="wattage">Wattage (W) - For panels only</label>
+                        <input type="number" id="wattage" name="wattage" min="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="image">Product Image</label>
+                        <input type="file" id="image" name="image" accept="image/*">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">Description <span class="required">*</span></label>
+                    <textarea id="description" name="description" rows="4" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="specifications">Specifications (JSON format)</label>
+                    <textarea id="specifications" name="specifications" rows="3" placeholder='{"efficiency": "21.5%", "warranty": "25 years"}'></textarea>
+                    <small class="form-hint">Enter specifications in JSON format</small>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save Product
+                    </button>
+                    <a href="{{ url_for('admin_products') }}" class="btn btn-outline">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Gallery - Al Muslim Engineers{% endblock %}
+
+{% block content %}
+<section class="admin-section">
+    <div class="admin-sidebar">
+        <div class="sidebar-header">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo">
+            <h3>Admin Portal</h3>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('admin_dashboard') }}" class="sidebar-link">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+            <a href="{{ url_for('admin_products') }}" class="sidebar-link">
+                <i class="fas fa-box"></i> Products
+            </a>
+            <a href="{{ url_for('admin_applications') }}" class="sidebar-link">
+                <i class="fas fa-file-alt"></i> Applications
+            </a>
+            <a href="{{ url_for('admin_orders') }}" class="sidebar-link">
+                <i class="fas fa-shopping-bag"></i> Orders
+            </a>
+            <a href="{{ url_for('admin_maintenance') }}" class="sidebar-link">
+                <i class="fas fa-tools"></i> Maintenance
+            </a>
+            <a href="{{ url_for('admin_gallery') }}" class="sidebar-link active">
+                <i class="fas fa-images"></i> Gallery
+            </a>
+            <a href="{{ url_for('admin_feedback') }}" class="sidebar-link">
+                <i class="fas fa-comments"></i> Feedback
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <a href="{{ url_for('logout') }}" class="sidebar-link">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </div>
+    
+    <div class="admin-main">
+        <div class="admin-header">
+            <h1><i class="fas fa-images"></i> Gallery Projects</h1>
+            <div class="header-actions">
+                <a href="{{ url_for('admin_add_gallery') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add Project
+                </a>
+            </div>
+        </div>
+        
+        <div class="admin-card">
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>Capacity</th>
+                            <th>Location</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for project in projects %}
+                        <tr>
+                            <td>
+                                {% set images = project.images|fromjson if project.images else ['project-1.jpg'] %}
+                                <img src="{{ url_for('static', filename='images/' + images[0]) }}" alt="{{ project.title }}" class="product-thumb">
+                            </td>
+                            <td>{{ project.title }}</td>
+                            <td>{{ project.category|title }}</td>
+                            <td>{{ project.system_capacity }} kW</td>
+                            <td>{{ project.location }}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a href="{{ url_for('admin_edit_gallery', project_id=project.id) }}" class="btn btn-sm btn-primary" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{{ url_for('admin_delete_gallery', project_id=project.id) }}" class="btn btn-sm btn-danger" title="Delete" onclick="return confirm('Are you sure?')">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

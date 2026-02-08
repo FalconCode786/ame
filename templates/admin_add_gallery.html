@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Gallery Project - Al Muslim Engineers{% endblock %}
+
+{% block content %}
+<section class="admin-section">
+    <div class="admin-sidebar">
+        <div class="sidebar-header">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo">
+            <h3>Admin Portal</h3>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('admin_dashboard') }}" class="sidebar-link">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+            <a href="{{ url_for('admin_products') }}" class="sidebar-link">
+                <i class="fas fa-box"></i> Products
+            </a>
+            <a href="{{ url_for('admin_applications') }}" class="sidebar-link">
+                <i class="fas fa-file-alt"></i> Applications
+            </a>
+            <a href="{{ url_for('admin_orders') }}" class="sidebar-link">
+                <i class="fas fa-shopping-bag"></i> Orders
+            </a>
+            <a href="{{ url_for('admin_maintenance') }}" class="sidebar-link">
+                <i class="fas fa-tools"></i> Maintenance
+            </a>
+            <a href="{{ url_for('admin_gallery') }}" class="sidebar-link active">
+                <i class="fas fa-images"></i> Gallery
+            </a>
+            <a href="{{ url_for('admin_feedback') }}" class="sidebar-link">
+                <i class="fas fa-comments"></i> Feedback
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <a href="{{ url_for('logout') }}" class="sidebar-link">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </div>
+    
+    <div class="admin-main">
+        <div class="admin-header">
+            <h1><i class="fas fa-plus-circle"></i> Add Gallery Project</h1>
+        </div>
+        
+        <div class="admin-card">
+            <form method="POST" enctype="multipart/form-data" class="admin-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="title">Project Title <span class="required">*</span></label>
+                        <input type="text" id="title" name="title" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="category">Category <span class="required">*</span></label>
+                        <select id="category" name="category" required>
+                            <option value="">Select Category</option>
+                            <option value="residential">Residential</option>
+                            <option value="commercial">Commercial</option>
+                            <option value="industrial">Industrial</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="system_capacity">System Capacity (kW) <span class="required">*</span></label>
+                        <input type="number" id="system_capacity" name="system_capacity" step="0.1" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="completion_date">Completion Date</label>
+                        <input type="date" id="completion_date" name="completion_date">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="location">Location <span class="required">*</span></label>
+                    <input type="text" id="location" name="location" placeholder="e.g., Bahria Town, Rawalpindi" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" rows="4"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="images">Project Images <span class="required">*</span></label>
+                    <input type="file" id="images" name="images" multiple accept="image/*" required>
+                    <small class="form-hint">You can select multiple images</small>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save Project
+                    </button>
+                    <a href="{{ url_for('admin_gallery') }}" class="btn btn-outline">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

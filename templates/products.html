@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}Solar Products - Al Muslim Engineers{% endblock %}
+
+{% block content %}
+<section class="products-section">
+    <div class="products-hero">
+        <div class="products-hero-bg">
+            <img src="{{ url_for('static', filename='images/solar-panel-1.jpg') }}" alt="Solar Products">
+            <div class="products-hero-overlay"></div>
+        </div>
+        <div class="products-hero-content">
+            <h1>Solar Products</h1>
+            <p>Premium quality solar equipment for your installation</p>
+        </div>
+    </div>
+    
+    <div class="products-container">
+        <div class="products-filter">
+            <div class="filter-group">
+                <label><i class="fas fa-filter"></i> Filter by Category:</label>
+                <div class="filter-buttons">
+                    <a href="{{ url_for('products', category='all') }}" class="filter-btn {% if category == 'all' %}active{% endif %}">All</a>
+                    <a href="{{ url_for('products', category='panel') }}" class="filter-btn {% if category == 'panel' %}active{% endif %}">Panels</a>
+                    <a href="{{ url_for('products', category='inverter') }}" class="filter-btn {% if category == 'inverter' %}active{% endif %}">Inverters</a>
+                    <a href="{{ url_for('products', category='battery') }}" class="filter-btn {% if category == 'battery' %}active{% endif %}">Batteries</a>
+                    <a href="{{ url_for('products', category='controller') }}" class="filter-btn {% if category == 'controller' %}active{% endif %}">Controllers</a>
+                    <a href="{{ url_for('products', category='mounting') }}" class="filter-btn {% if category == 'mounting' %}active{% endif %}">Mounting</a>
+                    <a href="{{ url_for('products', category='cables') }}" class="filter-btn {% if category == 'cables' %}active{% endif %}">Cables</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="products-grid">
+            {% for product in products %}
+            <div class="product-card">
+                <div class="product-badge">
+                    {% if product.stock_quantity > 0 %}
+                        <span class="badge in-stock"><i class="fas fa-check"></i> In Stock</span>
+                    {% else %}
+                        <span class="badge out-stock"><i class="fas fa-times"></i> Out of Stock</span>
+                    {% endif %}
+                </div>
+                <div class="product-image">
+                    {% if product.image %}
+                        <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}">
+                    {% else %}
+                        <img src="{{ url_for('static', filename='images/solar-panel-1.jpg') }}" alt="{{ product.name }}">
+                    {% endif %}
+                    <div class="product-overlay">
+                        <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn-view">
+                            <i class="fas fa-eye"></i> View Details
+                        </a>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <span class="product-category">{{ product.category|title }}</span>
+                    <h3>{{ product.name }}</h3>
+                    <p class="product-description">{{ product.description[:100] }}...</p>
+                    <div class="product-meta">
+                        {% if product.wattage %}
+                            <span class="product-wattage"><i class="fas fa-bolt"></i> {{ product.wattage }}W</span>
+                        {% endif %}
+                        <span class="product-stock"><i class="fas fa-box"></i> {{ product.stock_quantity }} available</span>
+                    </div>
+                    <div class="product-footer">
+                        <span class="product-price">PKR {{ "{:,.0f}".format(product.price) }}</span>
+                        <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-shopping-cart"></i> Add to Cart
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% if not products %}
+        <div class="empty-state">
+            <i class="fas fa-box-open"></i>
+            <p>No products found in this category</p>
+            <a href="{{ url_for('products') }}" class="btn btn-primary">View All Products</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

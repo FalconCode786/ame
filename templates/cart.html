@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}Shopping Cart - Al Muslim Engineers{% endblock %}
+
+{% block content %}
+<section class="cart-section">
+    <div class="cart-container">
+        <div class="cart-header">
+            <h1><i class="fas fa-shopping-cart"></i> Shopping Cart</h1>
+            <p>Review your items before checkout</p>
+        </div>
+        
+        {% if cart_items %}
+        <div class="cart-grid">
+            <div class="cart-items">
+                <div class="cart-table-header">
+                    <span>Product</span>
+                    <span>Price</span>
+                    <span>Quantity</span>
+                    <span>Total</span>
+                    <span>Action</span>
+                </div>
+                
+                {% for item in cart_items %}
+                <div class="cart-item">
+                    <div class="item-product">
+                        {% if item.product.image %}
+                            <img src="{{ url_for('static', filename='images/' + item.product.image) }}" alt="{{ item.product.name }}">
+                        {% else %}
+                            <img src="{{ url_for('static', filename='images/solar-panel-1.jpg') }}" alt="{{ item.product.name }}">
+                        {% endif %}
+                        <div class="item-info">
+                            <h4>{{ item.product.name }}</h4>
+                            <span class="item-category">{{ item.product.category|title }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="item-price">
+                        PKR {{ "{:,.0f}".format(item.product.price) }}
+                    </div>
+                    
+                    <div class="item-quantity">
+                        <form method="POST" action="{{ url_for('update_cart', cart_id=item.id) }}">
+                            <div class="quantity-control">
+                                <button type="button" class="qty-btn" onclick="this.parentElement.querySelector('input').stepDown(); this.form.submit()">-</button>
+                                <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock_quantity }}" onchange="this.form.submit()">
+                                <button type="button" class="qty-btn" onclick="this.parentElement.querySelector('input').stepUp(); this.form.submit()">+</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div class="item-total">
+                        PKR {{ "{:,.0f}".format(item.product.price * item.quantity) }}
+                    </div>
+                    
+                    <div class="item-action">
+                        <a href="{{ url_for('remove_from_cart', cart_id=item.id) }}" class="btn-remove" onclick="return confirm('Remove this item from cart?')">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="cart-summary">
+                <h3><i class="fas fa-receipt"></i> Order Summary</h3>
+                
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span>PKR {{ "{:,.0f}".format(total) }}</span>
+                </div>
+                
+                <div class="summary-row">
+                    <span>Delivery</span>
+                    <span class="free">Free</span>
+                </div>
+                
+                <div class="summary-row total">
+                    <span>Total</span>
+                    <span>PKR {{ "{:,.0f}".format(total) }}</span>
+                </div>
+                
+                <a href="{{ url_for('checkout') }}" class="btn btn-primary btn-full btn-large">
+                    <i class="fas fa-credit-card"></i> Proceed to Checkout
+                </a>
+                
+                <a href="{{ url_for('products') }}" class="btn btn-outline btn-full">
+                    <i class="fas fa-arrow-left"></i> Continue Shopping
+                </a>
+                
+                <div class="summary-note">
+                    <i class="fas fa-info-circle"></i>
+                    <p>Free delivery within Rawalpindi city limits</p>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-cart">
+            <i class="fas fa-shopping-cart"></i>
+            <h2>Your cart is empty</h2>
+            <p>Browse our products and add items to your cart</p>
+            <a href="{{ url_for('products') }}" class="btn btn-primary btn-large">
+                <i class="fas fa-shopping-bag"></i> Shop Now
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

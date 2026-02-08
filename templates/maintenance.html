@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}Maintenance Request - Al Muslim Engineers{% endblock %}
+
+{% block content %}
+<section class="form-section">
+    <div class="form-bg">
+        <img src="{{ url_for('static', filename='images/project-1.jpg') }}" alt="Maintenance">
+        <div class="form-overlay"></div>
+    </div>
+    
+    <div class="form-container">
+        <div class="form-card form-card-large">
+            <div class="form-header">
+                <div class="form-icon">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <h1>Maintenance Request</h1>
+                <p>Request professional solar system maintenance</p>
+            </div>
+            
+            <div class="maintenance-services">
+                <h3><i class="fas fa-list"></i> Our Services</h3>
+                <div class="services-grid">
+                    <div class="service-item">
+                        <i class="fas fa-broom"></i>
+                        <span>Panel Cleaning</span>
+                    </div>
+                    <div class="service-item">
+                        <i class="fas fa-wrench"></i>
+                        <span>Repair Service</span>
+                    </div>
+                    <div class="service-item">
+                        <i class="fas fa-search"></i>
+                        <span>System Inspection</span>
+                    </div>
+                    <div class="service-item">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>System Upgrade</span>
+                    </div>
+                </div>
+            </div>
+            
+            <form class="maintenance-form" method="POST" action="{{ url_for('maintenance') }}">
+                <div class="form-section-title">
+                    <i class="fas fa-info-circle"></i> Request Details
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="request_type">
+                            <i class="fas fa-wrench"></i> Service Type <span class="required">*</span>
+                        </label>
+                        <select id="request_type" name="request_type" required>
+                            <option value="">Select Service</option>
+                            <option value="cleaning">Panel Cleaning</option>
+                            <option value="repair">Repair Service</option>
+                            <option value="inspection">System Inspection</option>
+                            <option value="upgrade">System Upgrade</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="system_capacity">
+                            <i class="fas fa-bolt"></i> System Capacity (kW)
+                        </label>
+                        <input type="number" id="system_capacity" name="system_capacity" 
+                               step="0.1" placeholder="e.g., 5.5">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="installation_date">
+                            <i class="fas fa-calendar"></i> Installation Date
+                        </label>
+                        <input type="date" id="installation_date" name="installation_date">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="preferred_date">
+                            <i class="fas fa-calendar-check"></i> Preferred Service Date
+                        </label>
+                        <input type="date" id="preferred_date" name="preferred_date">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="issue_description">
+                        <i class="fas fa-comment"></i> Issue Description <span class="required">*</span>
+                    </label>
+                    <textarea id="issue_description" name="issue_description" rows="4" required
+                              placeholder="Please describe the issue or service required in detail"></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-large">
+                        <i class="fas fa-paper-plane"></i> Submit Request
+                    </button>
+                    <a href="{{ url_for('client_dashboard') }}" class="btn btn-outline">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

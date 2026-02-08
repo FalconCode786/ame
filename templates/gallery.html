@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Project Gallery - Al Muslim Engineers{% endblock %}
+
+{% block content %}
+<section class="gallery-section">
+    <div class="gallery-hero">
+        <div class="gallery-hero-bg">
+            <img src="{{ url_for('static', filename='images/project-2.jpg') }}" alt="Gallery">
+            <div class="gallery-hero-overlay"></div>
+        </div>
+        <div class="gallery-hero-content">
+            <h1>Our Projects</h1>
+            <p>Showcasing our successful solar installations across Rawalpindi</p>
+        </div>
+    </div>
+    
+    <div class="gallery-container">
+        <div class="gallery-filter">
+            <div class="filter-group">
+                <label><i class="fas fa-filter"></i> Filter by Type:</label>
+                <div class="filter-buttons">
+                    <a href="{{ url_for('gallery', category='all') }}" class="filter-btn {% if category == 'all' %}active{% endif %}">All</a>
+                    <a href="{{ url_for('gallery', category='residential') }}" class="filter-btn {% if category == 'residential' %}active{% endif %}">Residential</a>
+                    <a href="{{ url_for('gallery', category='commercial') }}" class="filter-btn {% if category == 'commercial' %}active{% endif %}">Commercial</a>
+                    <a href="{{ url_for('gallery', category='industrial') }}" class="filter-btn {% if category == 'industrial' %}active{% endif %}">Industrial</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="gallery-grid-large">
+            {% for project in projects %}
+            <div class="gallery-card">
+                {% set images = project.images|fromjson if project.images else ['project-1.jpg'] %}
+                <div class="gallery-image">
+                    <img src="{{ url_for('static', filename='images/' + images[0]) }}" alt="{{ project.title }}">
+                    <div class="gallery-overlay">
+                        <a href="{{ url_for('gallery_project_detail', project_id=project.id) }}" class="gallery-view-btn">
+                            <i class="fas fa-external-link-alt"></i> View Project
+                        </a>
+                    </div>
+                </div>
+                <div class="gallery-info">
+                    <span class="gallery-category">{{ project.category|title }}</span>
+                    <h3>{{ project.title }}</h3>
+                    <div class="gallery-meta">
+                        <span><i class="fas fa-bolt"></i> {{ project.system_capacity }} kW</span>
+                        <span><i class="fas fa-map-marker-alt"></i> {{ project.location }}</span>
+                    </div>
+                    {% if project.completion_date %}
+                    <span class="gallery-date">Completed: {{ project.completion_date.strftime('%B %Y') }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% if not projects %}
+        <div class="empty-state">
+            <i class="fas fa-images"></i>
+            <p>No projects found in this category</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

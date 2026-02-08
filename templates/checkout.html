@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% block title %}Checkout - Al Muslim Engineers{% endblock %}
+
+{% block content %}
+<section class="checkout-section">
+    <div class="checkout-container">
+        <div class="checkout-header">
+            <h1><i class="fas fa-credit-card"></i> Checkout</h1>
+            <p>Complete your order</p>
+        </div>
+        
+        <div class="checkout-grid">
+            <div class="checkout-form-section">
+                <form method="POST" action="{{ url_for('checkout') }}">
+                    <div class="form-card">
+                        <div class="form-card-header">
+                            <i class="fas fa-truck"></i>
+                            <h3>Shipping Information</h3>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="shipping_address">
+                                <i class="fas fa-map-marker-alt"></i> Delivery Address <span class="required">*</span>
+                            </label>
+                            <textarea id="shipping_address" name="shipping_address" rows="3" required
+                                      placeholder="Enter complete delivery address in Rawalpindi">{{ user.address if user.address else '' }}</textarea>
+                            <small class="form-hint">We only deliver within Rawalpindi</small>
+                        </div>
+                    </div>
+                    
+                    <div class="form-card">
+                        <div class="form-card-header">
+                            <i class="fas fa-money-bill-wave"></i>
+                            <h3>Payment Method</h3>
+                        </div>
+                        
+                        <div class="payment-options">
+                            <label class="payment-option">
+                                <input type="radio" name="payment_method" value="cod" checked>
+                                <div class="payment-option-content">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                    <div>
+                                        <strong>Cash on Delivery</strong>
+                                        <p>Pay when you receive your order</p>
+                                    </div>
+                                </div>
+                            </label>
+                            
+                            <label class="payment-option">
+                                <input type="radio" name="payment_method" value="bank">
+                                <div class="payment-option-content">
+                                    <i class="fas fa-university"></i>
+                                    <div>
+                                        <strong>Bank Transfer</strong>
+                                        <p>Transfer to our bank account</p>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-large btn-full">
+                            <i class="fas fa-check-circle"></i> Place Order
+                        </button>
+                        <a href="{{ url_for('cart') }}" class="btn btn-outline btn-full">
+                            <i class="fas fa-arrow-left"></i> Back to Cart
+                        </a>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="checkout-summary">
+                <div class="summary-card">
+                    <h3><i class="fas fa-shopping-bag"></i> Order Summary</h3>
+                    
+                    <div class="summary-items">
+                        {% for item in cart_items %}
+                        <div class="summary-item">
+                            <div class="item-details">
+                                <span class="item-name">{{ item.product.name }}</span>
+                                <span class="item-qty">x{{ item.quantity }}</span>
+                            </div>
+                            <span class="item-price">PKR {{ "{:,.0f}".format(item.product.price * item.quantity) }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="summary-totals">
+                        <div class="summary-row">
+                            <span>Subtotal</span>
+                            <span>PKR {{ "{:,.0f}".format(total) }}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Delivery</span>
+                            <span class="free">Free</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>Total</span>
+                            <span>PKR {{ "{:,.0f}".format(total) }}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="checkout-info">
+                    <div class="info-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Secure Checkout</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-truck"></i>
+                        <span>Free Delivery</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-undo"></i>
+                        <span>Easy Returns</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

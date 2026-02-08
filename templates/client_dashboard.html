@@ -1,0 +1,363 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Al Muslim Engineers{% endblock %}
+
+{% block content %}
+<section class="dashboard-section">
+    <div class="dashboard-sidebar">
+        <div class="sidebar-header">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo">
+            <h3>Client Portal</h3>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="#overview" class="sidebar-link active" data-tab="overview">
+                <i class="fas fa-home"></i> Overview
+            </a>
+            <a href="#applications" class="sidebar-link" data-tab="applications">
+                <i class="fas fa-file-alt"></i> My Applications
+            </a>
+            <a href="#orders" class="sidebar-link" data-tab="orders">
+                <i class="fas fa-shopping-bag"></i> My Orders
+            </a>
+            <a href="#maintenance" class="sidebar-link" data-tab="maintenance">
+                <i class="fas fa-tools"></i> Maintenance
+            </a>
+            <a href="#profile" class="sidebar-link" data-tab="profile">
+                <i class="fas fa-user"></i> Profile
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <a href="{{ url_for('logout') }}" class="sidebar-link">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </div>
+    
+    <div class="dashboard-main">
+        <div class="dashboard-header">
+            <div class="header-welcome">
+                <h1>Welcome, {{ user.full_name }}</h1>
+                <p>Here's your solar journey summary</p>
+            </div>
+            <div class="header-actions">
+                <a href="{{ url_for('apply_metering') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> New Application
+                </a>
+            </div>
+        </div>
+        
+        <!-- Overview Tab -->
+        <div class="tab-content active" id="overview">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon bg-blue">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value">{{ applications|length }}</span>
+                        <span class="stat-label">Applications</span>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon bg-green">
+                        <i class="fas fa-shopping-bag"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value">{{ orders|length }}</span>
+                        <span class="stat-label">Orders</span>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon bg-orange">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value">{{ maintenance|length }}</span>
+                        <span class="stat-label">Maintenance</span>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon bg-purple">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value">PKR {{ "{:,.0f}".format(total_savings) }}</span>
+                        <span class="stat-label">Est. Savings</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+                    </div>
+                    <div class="quick-actions">
+                        <a href="{{ url_for('apply_metering') }}" class="action-card">
+                            <i class="fas fa-solar-panel"></i>
+                            <span>Apply for Metering</span>
+                        </a>
+                        <a href="{{ url_for('products') }}" class="action-card">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>Shop Products</span>
+                        </a>
+                        <a href="{{ url_for('maintenance') }}" class="action-card">
+                            <i class="fas fa-wrench"></i>
+                            <span>Request Maintenance</span>
+                        </a>
+                        <a href="{{ url_for('solar_calculator') }}" class="action-card">
+                            <i class="fas fa-calculator"></i>
+                            <span>AI Calculator</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-info-circle"></i> Service Info</h3>
+                    </div>
+                    <div class="service-info">
+                        <div class="info-row">
+                            <span class="info-label">Service Area:</span>
+                            <span class="info-value">Rawalpindi Only</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">System Range:</span>
+                            <span class="info-value">1kW - 50kW</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Net Metering:</span>
+                            <span class="info-value">5kW and above</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Support:</span>
+                            <span class="info-value">+92-300-1234567</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Applications Tab -->
+        <div class="tab-content" id="applications">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-file-alt"></i> My Applications</h3>
+                    <a href="{{ url_for('apply_metering') }}" class="btn btn-sm btn-primary">New Application</a>
+                </div>
+                
+                {% if applications %}
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Reference</th>
+                                <th>Type</th>
+                                <th>Capacity</th>
+                                <th>Status</th>
+                                <th>Submitted</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for app in applications %}
+                            <tr>
+                                <td><strong>{{ app.reference_number }}</strong></td>
+                                <td>{{ app.application_type|title }} Metering</td>
+                                <td>{{ app.system_capacity }} kW</td>
+                                <td>
+                                    <span class="status-badge status-{{ app.status }}">
+                                        {{ app.status|replace('_', ' ')|title }}
+                                    </span>
+                                </td>
+                                <td>{{ app.submitted_at.strftime('%Y-%m-%d') }}</td>
+                                <td>
+                                    <a href="{{ url_for('application_status', app_id=app.id) }}" class="btn btn-sm btn-outline">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-file-alt"></i>
+                    <p>No applications yet</p>
+                    <a href="{{ url_for('apply_metering') }}" class="btn btn-primary">Apply Now</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Orders Tab -->
+        <div class="tab-content" id="orders">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-shopping-bag"></i> My Orders</h3>
+                    <a href="{{ url_for('products') }}" class="btn btn-sm btn-primary">Shop Now</a>
+                </div>
+                
+                {% if orders %}
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Order #</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Payment</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                            <tr>
+                                <td><strong>{{ order.order_number }}</strong></td>
+                                <td>PKR {{ "{:,.0f}".format(order.total_amount) }}</td>
+                                <td>
+                                    <span class="status-badge status-{{ order.status }}">
+                                        {{ order.status|title }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="status-badge status-{{ order.payment_status }}">
+                                        {{ order.payment_status|title }}
+                                    </span>
+                                </td>
+                                <td>{{ order.created_at.strftime('%Y-%m-%d') }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-shopping-bag"></i>
+                    <p>No orders yet</p>
+                    <a href="{{ url_for('products') }}" class="btn btn-primary">Shop Now</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Maintenance Tab -->
+        <div class="tab-content" id="maintenance">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-tools"></i> Maintenance Requests</h3>
+                    <a href="{{ url_for('maintenance') }}" class="btn btn-sm btn-primary">New Request</a>
+                </div>
+                
+                {% if maintenance %}
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Description</th>
+                                <th>Status</th>
+                                <th>Requested</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for req in maintenance %}
+                            <tr>
+                                <td>{{ req.request_type|title }}</td>
+                                <td>{{ req.issue_description[:50] }}...</td>
+                                <td>
+                                    <span class="status-badge status-{{ req.status }}">
+                                        {{ req.status|replace('_', ' ')|title }}
+                                    </span>
+                                </td>
+                                <td>{{ req.created_at.strftime('%Y-%m-%d') }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-tools"></i>
+                    <p>No maintenance requests</p>
+                    <a href="{{ url_for('maintenance') }}" class="btn btn-primary">Request Service</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Profile Tab -->
+        <div class="tab-content" id="profile">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-user"></i> My Profile</h3>
+                </div>
+                
+                <div class="profile-info">
+                    <div class="profile-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="profile-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Full Name:</span>
+                            <span class="detail-value">{{ user.full_name }}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Email:</span>
+                            <span class="detail-value">{{ user.email }}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Phone:</span>
+                            <span class="detail-value">{{ user.phone }}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Address:</span>
+                            <span class="detail-value">{{ user.address or 'Not provided' }}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">City:</span>
+                            <span class="detail-value">{{ user.city }}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Member Since:</span>
+                            <span class="detail-value">{{ user.created_at.strftime('%Y-%m-%d') }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Tab navigation
+    const sidebarLinks = document.querySelectorAll('.sidebar-link[data-tab]');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    sidebarLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const tabId = link.getAttribute('data-tab');
+            
+            // Update active states
+            sidebarLinks.forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+            
+            tabContents.forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.id === tabId) {
+                    tab.classList.add('active');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

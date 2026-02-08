@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ project.title }} - Al Muslim Engineers{% endblock %}
+
+{% block content %}
+<section class="project-detail-section">
+    <div class="project-detail-container">
+        <div class="project-header">
+            <span class="project-category">{{ project.category|title }}</span>
+            <h1>{{ project.title }}</h1>
+            <div class="project-meta">
+                <span><i class="fas fa-map-marker-alt"></i> {{ project.location }}</span>
+                <span><i class="fas fa-bolt"></i> {{ project.system_capacity }} kW</span>
+                {% if project.completion_date %}
+                <span><i class="fas fa-calendar"></i> {{ project.completion_date.strftime('%B %Y') }}</span>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="project-gallery">
+            {% set images = project.images|fromjson if project.images else ['project-1.jpg'] %}
+            <div class="project-main-image">
+                <img src="{{ url_for('static', filename='images/' + images[0]) }}" alt="{{ project.title }}">
+            </div>
+            {% if images|length > 1 %}
+            <div class="project-thumbnails">
+                {% for img in images %}
+                <img src="{{ url_for('static', filename='images/' + img) }}" alt="{{ project.title }}">
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="project-description">
+            <h2><i class="fas fa-info-circle"></i> About This Project</h2>
+            <p>{{ project.description }}</p>
+        </div>
+        
+        <div class="project-stats">
+            <div class="stat-item">
+                <i class="fas fa-solar-panel"></i>
+                <span class="stat-value">{{ project.system_capacity }} kW</span>
+                <span class="stat-label">System Capacity</span>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-home"></i>
+                <span class="stat-value">{{ project.category|title }}</span>
+                <span class="stat-label">Property Type</span>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-map-marker-alt"></i>
+                <span class="stat-value">Rawalpindi</span>
+                <span class="stat-label">Location</span>
+            </div>
+        </div>
+        
+        <div class="project-cta">
+            <h3>Want a similar system for your property?</h3>
+            <div class="cta-buttons">
+                <a href="{{ url_for('solar_calculator') }}" class="btn btn-primary">
+                    <i class="fas fa-calculator"></i> Calculate Your Savings
+                </a>
+                <a href="{{ url_for('apply_metering') }}" class="btn btn-secondary">
+                    <i class="fas fa-file-alt"></i> Apply for Metering
+                </a>
+            </div>
+        </div>
+        
+        <div class="project-navigation">
+            <a href="{{ url_for('gallery') }}" class="btn btn-outline">
+                <i class="fas fa-arrow-left"></i> Back to Gallery
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

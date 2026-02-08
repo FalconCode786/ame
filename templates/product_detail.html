@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.name }} - Al Muslim Engineers{% endblock %}
+
+{% block content %}
+<section class="product-detail-section">
+    <div class="product-detail-container">
+        <div class="product-detail-grid">
+            <div class="product-gallery">
+                <div class="main-image">
+                    {% if product.image %}
+                        <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}">
+                    {% else %}
+                        <img src="{{ url_for('static', filename='images/solar-panel-1.jpg') }}" alt="{{ product.name }}">
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="product-info-detail">
+                <div class="product-header">
+                    <span class="product-category">{{ product.category|title }}</span>
+                    <h1>{{ product.name }}</h1>
+                    <div class="product-rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                        <span>(4.5)</span>
+                    </div>
+                </div>
+                
+                <div class="product-price-detail">
+                    <span class="current-price">PKR {{ "{:,.0f}".format(product.price) }}</span>
+                    {% if product.stock_quantity > 0 %}
+                        <span class="stock-status in-stock"><i class="fas fa-check-circle"></i> In Stock ({{ product.stock_quantity }})</span>
+                    {% else %}
+                        <span class="stock-status out-stock"><i class="fas fa-times-circle"></i> Out of Stock</span>
+                    {% endif %}
+                </div>
+                
+                <div class="product-description-full">
+                    <p>{{ product.description }}</p>
+                </div>
+                
+                {% if product.specifications %}
+                <div class="product-specs">
+                    <h3><i class="fas fa-cogs"></i> Specifications</h3>
+                    <div class="specs-grid">
+                        {% set specs = product.specifications|fromjson %}
+                        {% for key, value in specs.items() %}
+                        <div class="spec-item">
+                            <span class="spec-label">{{ key|title }}:</span>
+                            <span class="spec-value">{{ value }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if product.stock_quantity > 0 %}
+                <form class="product-actions" method="POST" action="{{ url_for('add_to_cart', product_id=product.id) }}">
+                    <div class="quantity-selector">
+                        <label>Quantity:</label>
+                        <div class="quantity-control">
+                            <button type="button" class="qty-btn" onclick="decrementQty()">-</button>
+                            <input type="number" name="quantity" id="quantity" value="1" min="1" max="{{ product.stock_quantity }}">
+                            <button type="button" class="qty-btn" onclick="incrementQty()">+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button type="submit" class="btn btn-primary btn-large">
+                            <i class="fas fa-shopping-cart"></i> Add to Cart
+                        </button>
+                        <a href="{{ url_for('cart') }}" class="btn btn-outline">
+                            <i class="fas fa-eye"></i> View Cart
+                        </a>
+                    </div>
+                </form>
+                {% else %}
+                <div class="out-of-stock-message">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <p>This product is currently out of stock. Please check back later.</p>
+                </div>
+                {% endif %}
+                
+                <div class="product-features">
+                    <div class="feature-item">
+                        <i class="fas fa-truck"></i>
+                        <span>Free Delivery in Rawalpindi</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Warranty Included</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-headset"></i>
+                        <span>24/7 Support</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {% if related_products %}
+        <div class="related-products">
+            <h2><i class="fas fa-th-large"></i> Related Products</h2>
+            <div class="products-grid">
+                {% for related in related_products %}
+                <div class="product-card">
+                    <div class="product-image">
+                        {% if related.image %}
+                            <img src="{{ url_for('static', filename='images/' + related.image) }}" alt="{{ related.name }}">
+                        {% else %}
+                            <img src="{{ url_for('static', filename='images/solar-panel-1.jpg') }}" alt="{{ related.name }}">
+                        {% endif %}
+                        <div class="product-overlay">
+                            <a href="{{ url_for('product_detail', product_id=related.id) }}" class="btn-view">View Details</a>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <span class="product-category">{{ related.category|title }}</span>
+                        <h3>{{ related.name }}</h3>
+                        <p class="product-price">PKR {{ "{:,.0f}".format(related.price) }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function incrementQty() {
+        const input = document.getElementById('quantity');
+        const max = parseInt(input.max);
+        const current = parseInt(input.value);
+        if (current < max) {
+            input.value = current + 1;
+        }
+    }
+    
+    function decrementQty() {
+        const input = document.getElementById('quantity');
+        const current = parseInt(input.value);
+        if (current > 1) {
+            input.value = current - 1;
+        }
+    }
+</script>
+{% endblock %}

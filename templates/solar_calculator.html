@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+
+{% block title %}AI Solar Calculator - Al Muslim Engineers{% endblock %}
+
+{% block content %}
+<section class="calculator-section">
+    <div class="calculator-hero">
+        <div class="calculator-hero-bg">
+            <img src="{{ url_for('static', filename='images/project-3.jpg') }}" alt="Solar Calculator">
+            <div class="calculator-hero-overlay"></div>
+        </div>
+        <div class="calculator-hero-content">
+            <div class="ai-badge">
+                <i class="fas fa-robot"></i> AI-Powered
+            </div>
+            <h1>Solar System Calculator</h1>
+            <p>Get personalized solar recommendations based on your energy needs</p>
+        </div>
+    </div>
+    
+    <div class="calculator-container">
+        <div class="calculator-grid">
+            <div class="calculator-form-section">
+                <div class="form-card">
+                    <div class="form-card-header">
+                        <i class="fas fa-calculator"></i>
+                        <h3>Enter Your Details</h3>
+                    </div>
+                    
+                    <form method="POST" action="{{ url_for('solar_calculator') }}">
+                        <div class="form-group">
+                            <label for="monthly_bill">
+                                <i class="fas fa-money-bill-wave"></i> Monthly Electricity Bill (PKR)
+                            </label>
+                            <input type="number" id="monthly_bill" name="monthly_bill" 
+                                   required placeholder="e.g., 15000" min="1000">
+                            <small class="form-hint">Enter your average monthly electricity bill</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="roof_area">
+                                <i class="fas fa-home"></i> Available Roof Area (sq ft)
+                            </label>
+                            <input type="number" id="roof_area" name="roof_area" 
+                                   required placeholder="e.g., 500" min="100">
+                            <small class="form-hint">Approximate area available for solar panels</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="property_type">
+                                <i class="fas fa-building"></i> Property Type
+                            </label>
+                            <select id="property_type" name="property_type">
+                                <option value="residential">Residential</option>
+                                <option value="commercial">Commercial</option>
+                                <option value="industrial">Industrial</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-large btn-full">
+                            <i class="fas fa-calculator"></i> Calculate My System
+                        </button>
+                    </form>
+                </div>
+                
+                <div class="info-card">
+                    <h4><i class="fas fa-lightbulb"></i> How It Works</h4>
+                    <ul>
+                        <li>Our AI analyzes your electricity consumption</li>
+                        <li>Calculates optimal system size based on your roof area</li>
+                        <li>Estimates cost, savings, and payback period</li>
+                        <li>Determines eligibility for net metering</li>
+                    </ul>
+                </div>
+            </div>
+            
+            {% if recommendation %}
+            <div class="calculator-results">
+                <div class="results-header">
+                    <i class="fas fa-chart-pie"></i>
+                    <h2>Your Solar Recommendation</h2>
+                </div>
+                
+                <div class="result-card primary">
+                    <div class="result-icon">
+                        <i class="fas fa-solar-panel"></i>
+                    </div>
+                    <div class="result-content">
+                        <span class="result-label">Recommended System Size</span>
+                        <span class="result-value">{{ recommendation.recommended_capacity }} kW</span>
+                    </div>
+                </div>
+                
+                <div class="results-grid">
+                    <div class="result-card">
+                        <div class="result-icon bg-blue">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <div class="result-content">
+                            <span class="result-label">Estimated Cost</span>
+                            <span class="result-value">PKR {{ "{:,.0f}".format(recommendation.estimated_cost) }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="result-card">
+                        <div class="result-icon bg-green">
+                            <i class="fas fa-piggy-bank"></i>
+                        </div>
+                        <div class="result-content">
+                            <span class="result-label">Monthly Savings</span>
+                            <span class="result-value">PKR {{ "{:,.0f}".format(recommendation.monthly_savings) }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="result-card">
+                        <div class="result-icon bg-purple">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="result-content">
+                            <span class="result-label">Payback Period</span>
+                            <span class="result-value">{{ recommendation.payback_period }} Years</span>
+                        </div>
+                    </div>
+                    
+                    <div class="result-card">
+                        <div class="result-icon bg-orange">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <div class="result-content">
+                            <span class="result-label">Carbon Offset</span>
+                            <span class="result-value">{{ recommendation.carbon_offset }} Tons/Year</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="result-details">
+                    <div class="detail-row">
+                        <span><i class="fas fa-bolt"></i> Monthly Generation</span>
+                        <strong>{{ recommendation.monthly_generation }} kWh</strong>
+                    </div>
+                    <div class="detail-row">
+                        <span><i class="fas fa-chart-bar"></i> Monthly Consumption</span>
+                        <strong>{{ recommendation.monthly_consumption }} kWh</strong>
+                    </div>
+                    <div class="detail-row">
+                        <span><i class="fas fa-home"></i> Required Roof Area</span>
+                        <strong>{{ recommendation.required_area }} sq ft</strong>
+                    </div>
+                </div>
+                
+                {% if recommendation.net_metering_eligible %}
+                <div class="eligibility-badge eligible">
+                    <i class="fas fa-check-circle"></i>
+                    <div>
+                        <strong>Net Metering Eligible</strong>
+                        <p>Your system qualifies for net metering (5kW+)</p>
+                    </div>
+                </div>
+                {% else %}
+                <div class="eligibility-badge not-eligible">
+                    <i class="fas fa-info-circle"></i>
+                    <div>
+                        <strong>Gross Metering Recommended</strong>
+                        <p>Net metering requires 5kW or larger system</p>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div class="results-actions">
+                    <a href="{{ url_for('apply_metering') }}" class="btn btn-primary btn-large">
+                        <i class="fas fa-file-alt"></i> Apply for Metering
+                    </a>
+                    <a href="{{ url_for('products') }}" class="btn btn-outline">
+                        <i class="fas fa-shopping-cart"></i> Browse Products
+                    </a>
+                </div>
+            </div>
+            {% else %}
+            <div class="calculator-preview">
+                <div class="preview-content">
+                    <i class="fas fa-calculator"></i>
+                    <h3>Get Your Personalized Recommendation</h3>
+                    <p>Fill in your details to see how much you can save with solar energy</p>
+                    
+                    <div class="preview-features">
+                        <div class="feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>System size recommendation</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Cost estimation</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Savings calculation</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Payback period</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

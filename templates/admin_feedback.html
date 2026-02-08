@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Feedback - Al Muslim Engineers{% endblock %}
+
+{% block content %}
+<section class="admin-section">
+    <div class="admin-sidebar">
+        <div class="sidebar-header">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo">
+            <h3>Admin Portal</h3>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('admin_dashboard') }}" class="sidebar-link">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+            <a href="{{ url_for('admin_products') }}" class="sidebar-link">
+                <i class="fas fa-box"></i> Products
+            </a>
+            <a href="{{ url_for('admin_applications') }}" class="sidebar-link">
+                <i class="fas fa-file-alt"></i> Applications
+            </a>
+            <a href="{{ url_for('admin_orders') }}" class="sidebar-link">
+                <i class="fas fa-shopping-bag"></i> Orders
+            </a>
+            <a href="{{ url_for('admin_maintenance') }}" class="sidebar-link">
+                <i class="fas fa-tools"></i> Maintenance
+            </a>
+            <a href="{{ url_for('admin_gallery') }}" class="sidebar-link">
+                <i class="fas fa-images"></i> Gallery
+            </a>
+            <a href="{{ url_for('admin_feedback') }}" class="sidebar-link active">
+                <i class="fas fa-comments"></i> Feedback
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <a href="{{ url_for('logout') }}" class="sidebar-link">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </div>
+    
+    <div class="admin-main">
+        <div class="admin-header">
+            <h1><i class="fas fa-comments"></i> Customer Feedback</h1>
+        </div>
+        
+        <div class="admin-card">
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Client</th>
+                            <th>Rating</th>
+                            <th>Service</th>
+                            <th>Comment</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for feedback in feedbacks %}
+                        <tr>
+                            <td>{{ feedback.user.full_name }}</td>
+                            <td>
+                                <div class="star-rating-display">
+                                    {% for i in range(feedback.rating) %}
+                                        <i class="fas fa-star"></i>
+                                    {% endfor %}
+                                </div>
+                            </td>
+                            <td>{{ feedback.service_type|title if feedback.service_type else 'General' }}</td>
+                            <td>{{ feedback.comment[:80] }}...</td>
+                            <td>
+                                {% if feedback.is_approved %}
+                                    <span class="status-badge status-approved">Approved</span>
+                                {% else %}
+                                    <span class="status-badge status-pending">Pending</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ feedback.created_at.strftime('%Y-%m-%d') }}</td>
+                            <td>
+                                {% if not feedback.is_approved %}
+                                <a href="{{ url_for('admin_approve_feedback', feedback_id=feedback.id) }}" class="btn btn-sm btn-success">
+                                    <i class="fas fa-check"></i> Approve
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

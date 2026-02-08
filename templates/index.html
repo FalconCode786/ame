@@ -1,0 +1,359 @@
+{% extends 'base.html' %}
+
+{% block title %}Al Muslim Engineers - Solar Solutions Rawalpindi{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-bg">
+        <img src="{{ url_for('static', filename='images/hero-bg.jpg') }}" alt="Solar Installation">
+        <div class="hero-overlay"></div>
+    </div>
+    <div class="hero-content">
+        <h1 class="hero-title">Power Your Future with <span>Clean Energy</span></h1>
+        <p class="hero-subtitle">Pakistan's Leading Solar Solutions Provider in Rawalpindi</p>
+        <p class="hero-description">From 1kW to 50kW solar systems, we provide complete net metering and gross metering solutions for residential, commercial, and industrial clients.</p>
+        <div class="hero-buttons">
+            <a href="{{ url_for('solar_calculator') }}" class="btn btn-primary">
+                <i class="fas fa-calculator"></i> AI Solar Calculator
+            </a>
+            <a href="{{ url_for('apply_metering') }}" class="btn btn-secondary">
+                <i class="fas fa-solar-panel"></i> Apply for Metering
+            </a>
+        </div>
+    </div>
+    <div class="hero-stats">
+        <div class="stat-item">
+            <span class="stat-number">{{ stats.installations }}+</span>
+            <span class="stat-label">Installations</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-number">{{ stats.clients }}+</span>
+            <span class="stat-label">Happy Clients</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-number">{{ stats.capacity }}+</span>
+            <span class="stat-label">kW Installed</span>
+        </div>
+    </div>
+    <div class="scroll-indicator">
+        <i class="fas fa-chevron-down"></i>
+    </div>
+</section>
+
+<!-- Services Section -->
+<section class="services" id="services">
+    <div class="section-container">
+        <div class="section-header">
+            <span class="section-tag">Our Services</span>
+            <h2 class="section-title">Complete Solar Solutions</h2>
+            <p class="section-description">We offer end-to-end solar services tailored to your energy needs</p>
+        </div>
+        
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h3>Net Metering</h3>
+                <p>Export excess solar power to the grid and earn credits. Available for systems 5kW and above.</p>
+                <a href="{{ url_for('apply_metering') }}" class="service-link">Apply Now <i class="fas fa-arrow-right"></i></a>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-icon">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+                <h3>Gross Metering</h3>
+                <p>Sell all your solar power to the grid at favorable rates. Perfect for 1kW to 50kW systems.</p>
+                <a href="{{ url_for('apply_metering') }}" class="service-link">Apply Now <i class="fas fa-arrow-right"></i></a>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-icon">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <h3>Maintenance</h3>
+                <p>Professional cleaning, inspection, and repair services to keep your system running at peak efficiency.</p>
+                <a href="{{ url_for('maintenance') }}" class="service-link">Request Service <i class="fas fa-arrow-right"></i></a>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <h3>Solar Products</h3>
+                <p>Premium quality solar panels, inverters, batteries, and accessories at competitive prices.</p>
+                <a href="{{ url_for('products') }}" class="service-link">Shop Now <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="how-it-works">
+    <div class="section-container">
+        <div class="section-header">
+            <span class="section-tag">Process</span>
+            <h2 class="section-title">How It Works</h2>
+            <p class="section-description">Simple steps to start your solar journey</p>
+        </div>
+        
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-number">01</div>
+                <div class="step-icon"><i class="fas fa-calculator"></i></div>
+                <h3>Calculate Savings</h3>
+                <p>Use our AI calculator to determine the perfect system size for your needs</p>
+            </div>
+            
+            <div class="step-card">
+                <div class="step-number">02</div>
+                <div class="step-icon"><i class="fas fa-file-alt"></i></div>
+                <h3>Apply Online</h3>
+                <p>Submit your metering application with required details</p>
+            </div>
+            
+            <div class="step-card">
+                <div class="step-number">03</div>
+                <div class="step-icon"><i class="fas fa-clipboard-check"></i></div>
+                <h3>Site Survey</h3>
+                <p>Our engineers visit your property for technical assessment</p>
+            </div>
+            
+            <div class="step-card">
+                <div class="step-number">04</div>
+                <div class="step-icon"><i class="fas fa-cogs"></i></div>
+                <h3>Installation</h3>
+                <p>Professional installation by certified technicians</p>
+            </div>
+            
+            <div class="step-card">
+                <div class="step-number">05</div>
+                <div class="step-icon"><i class="fas fa-plug"></i></div>
+                <h3>Grid Connection</h3>
+                <p>Complete net/gross metering connection with utility</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products Section -->
+<section class="featured-products">
+    <div class="section-container">
+        <div class="section-header">
+            <span class="section-tag">Products</span>
+            <h2 class="section-title">Featured Solar Products</h2>
+            <p class="section-description">Premium quality equipment for your solar installation</p>
+        </div>
+        
+        <div class="products-grid">
+            {% for product in featured_products %}
+            <div class="product-card">
+                <div class="product-image">
+                    {% if product.image %}
+                        <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}">
+                    {% else %}
+                        <img src="{{ url_for('static', filename='images/solar-panel-1.jpg') }}" alt="{{ product.name }}">
+                    {% endif %}
+                    <div class="product-overlay">
+                        <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn-view">View Details</a>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <span class="product-category">{{ product.category|title }}</span>
+                    <h3>{{ product.name }}</h3>
+                    <p class="product-price">PKR {{ "{:,.0f}".format(product.price) }}</p>
+                    {% if product.wattage %}
+                        <span class="product-wattage">{{ product.wattage }}W</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="section-cta">
+            <a href="{{ url_for('products') }}" class="btn btn-outline">View All Products <i class="fas fa-arrow-right"></i></a>
+        </div>
+    </div>
+</section>
+
+<!-- AI Calculator CTA Section -->
+<section class="ai-calculator-cta">
+    <div class="cta-bg">
+        <img src="{{ url_for('static', filename='images/project-2.jpg') }}" alt="Solar Farm">
+        <div class="cta-overlay"></div>
+    </div>
+    <div class="cta-content">
+        <div class="cta-icon">
+            <i class="fas fa-robot"></i>
+        </div>
+        <h2>AI-Powered Solar Calculator</h2>
+        <p>Get personalized solar recommendations based on your electricity bill, roof area, and energy consumption. Our AI analyzes your requirements and suggests the optimal system size.</p>
+        <ul class="cta-features">
+            <li><i class="fas fa-check"></i> System size recommendation</li>
+            <li><i class="fas fa-check"></i> Cost estimation</li>
+            <li><i class="fas fa-check"></i> Savings calculation</li>
+            <li><i class="fas fa-check"></i> Payback period analysis</li>
+        </ul>
+        <a href="{{ url_for('solar_calculator') }}" class="btn btn-primary btn-large">
+            <i class="fas fa-calculator"></i> Try AI Calculator
+        </a>
+    </div>
+</section>
+
+<!-- Gallery Preview Section -->
+<section class="gallery-preview">
+    <div class="section-container">
+        <div class="section-header">
+            <span class="section-tag">Portfolio</span>
+            <h2 class="section-title">Our Projects</h2>
+            <p class="section-description">See our successful installations across Rawalpindi</p>
+        </div>
+        
+        <div class="gallery-grid">
+            {% for project in gallery_projects %}
+            <div class="gallery-item">
+                {% set images = project.images|fromjson if project.images else ['project-1.jpg'] %}
+                <img src="{{ url_for('static', filename='images/' + images[0]) }}" alt="{{ project.title }}">
+                <div class="gallery-overlay">
+                    <h3>{{ project.title }}</h3>
+                    <p>{{ project.system_capacity }}kW {{ project.category|title }}</p>
+                    <a href="{{ url_for('gallery_project_detail', project_id=project.id) }}" class="gallery-link">
+                        <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="section-cta">
+            <a href="{{ url_for('gallery') }}" class="btn btn-outline">View All Projects <i class="fas fa-arrow-right"></i></a>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials">
+    <div class="section-container">
+        <div class="section-header">
+            <span class="section-tag">Testimonials</span>
+            <h2 class="section-title">What Our Clients Say</h2>
+            <p class="section-description">Feedback from our satisfied customers</p>
+        </div>
+        
+        <div class="testimonials-slider">
+            {% for feedback in feedbacks %}
+            <div class="testimonial-card">
+                <div class="testimonial-rating">
+                    {% for i in range(feedback.rating) %}
+                        <i class="fas fa-star"></i>
+                    {% endfor %}
+                </div>
+                <p class="testimonial-text">"{{ feedback.comment }}"</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="author-info">
+                        <h4>{{ feedback.user.full_name }}</h4>
+                        <span>{{ feedback.service_type|title if feedback.service_type else 'Customer' }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="section-container">
+        <div class="cta-box">
+            <div class="cta-box-content">
+                <h2>Ready to Go Solar?</h2>
+                <p>Join thousands of satisfied customers in Rawalpindi who have switched to clean energy. Start your solar journey today!</p>
+            </div>
+            <div class="cta-box-buttons">
+                <a href="{{ url_for('signup') }}" class="btn btn-primary">Get Started</a>
+                <a href="{{ url_for('apply_metering') }}" class="btn btn-secondary">Apply for Metering</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Info Section -->
+<section class="contact-info">
+    <div class="section-container">
+        <div class="contact-grid">
+            <div class="contact-card">
+                <i class="fas fa-map-marker-alt"></i>
+                <h3>Visit Us</h3>
+                <p>Main Office, Saddar<br>Rawalpindi, Pakistan</p>
+            </div>
+            <div class="contact-card">
+                <i class="fas fa-phone-alt"></i>
+                <h3>Call Us</h3>
+                <p>+92-300-1234567<br>Mon - Sat, 9AM - 6PM</p>
+            </div>
+            <div class="contact-card">
+                <i class="fas fa-envelope"></i>
+                <h3>Email Us</h3>
+                <p>info@almuslimengineers.com<br>support@almuslimengineers.com</p>
+            </div>
+            <div class="contact-card">
+                <i class="fas fa-clock"></i>
+                <h3>Working Hours</h3>
+                <p>Monday - Saturday<br>9:00 AM - 6:00 PM</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Hero parallax effect
+    window.addEventListener('scroll', () => {
+        const scrolled = window.pageYOffset;
+        const heroBg = document.querySelector('.hero-bg img');
+        if (heroBg) {
+            heroBg.style.transform = `translateY(${scrolled * 0.5}px)`;
+        }
+    });
+    
+    // Stats counter animation
+    const statNumbers = document.querySelectorAll('.stat-number');
+    const animateStats = () => {
+        statNumbers.forEach(stat => {
+            const target = parseInt(stat.textContent);
+            let current = 0;
+            const increment = target / 50;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    stat.textContent = target + '+';
+                    clearInterval(timer);
+                } else {
+                    stat.textContent = Math.floor(current) + '+';
+                }
+            }, 30);
+        });
+    };
+    
+    // Trigger stats animation when in view
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                animateStats();
+                observer.disconnect();
+            }
+        });
+    });
+    
+    const heroStats = document.querySelector('.hero-stats');
+    if (heroStats) {
+        observer.observe(heroStats);
+    }
+</script>
+{% endblock %}
