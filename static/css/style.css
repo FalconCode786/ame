@@ -3565,7 +3565,7 @@ img {
     }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
     .nav-menu {
         display: none;
         position: absolute;
@@ -3587,11 +3587,11 @@ img {
     }
     
     .hero-title {
-        font-size: 2rem;
+        font-size: 3rem;
     }
     
     .hero-subtitle {
-        font-size: 1.1rem;
+        font-size: 1.2rem;
     }
     
     .hero-stats {
