@@ -90,7 +90,7 @@
                 <div class="form-group">
                     <label>Current Images</label>
                     <div class="current-images">
-                        {% set images = project.images|fromjson if project.images else [] %}
+                        {% set images = project.images_list %}
                         {% for img in images %}
                         <img src="{{ url_for('static', filename='images/' + img) }}" alt="Project" class="thumb-preview">
                         {% endfor %}

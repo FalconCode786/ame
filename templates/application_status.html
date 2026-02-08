@@ -99,7 +99,7 @@
                 {% endif %}
                 
                 {% if application.documents %}
-                {% set docs = application.documents|fromjson %}
+                {% set docs = application.docs_dict %}
                 {% if docs %}
                 <div class="detail-card full-width">
                     <h4><i class="fas fa-file-alt"></i> Uploaded Documents</h4>

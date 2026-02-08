@@ -47,7 +47,7 @@
                 <div class="product-specs">
                     <h3><i class="fas fa-cogs"></i> Specifications</h3>
                     <div class="specs-grid">
-                        {% set specs = product.specifications|fromjson %}
+                        {% set specs = product.specs_dict %}
                         {% for key, value in specs.items() %}
                         <div class="spec-item">
                             <span class="spec-label">{{ key|title }}:</span>

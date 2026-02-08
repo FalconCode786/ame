@@ -31,7 +31,7 @@
         <div class="gallery-grid-large">
             {% for project in projects %}
             <div class="gallery-card" data-aos="fade-up" data-aos-delay="{{ (loop.index0 % 3) * 100 }}">
-                {% set images = project.images|fromjson if project.images else ['project-1.jpg'] %}
+                {% set images = project.images_list %}
                 <div class="gallery-image">
                     <img src="{{ url_for('static', filename='images/' + images[0]) }}" alt="{{ project.title }}">
                     <div class="gallery-overlay">

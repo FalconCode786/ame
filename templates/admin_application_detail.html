@@ -128,7 +128,7 @@
         
         <!-- Uploaded Documents -->
         {% if application.documents %}
-        {% set docs = application.documents|fromjson %}
+        {% set docs = application.docs_dict %}
         {% if docs %}
         <div class="admin-card">
             <div class="card-header">

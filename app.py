@@ -30,10 +30,9 @@ db = SQLAlchemy(app)
 # Create upload folder if not exists
 os.makedirs(os.path.join(app.root_path, app.config['UPLOAD_FOLDER']), exist_ok=True)
 
-# ==================== CUSTOM JINJA FILTERS ====================
+# ==================== HELPER FUNCTION FOR JSON PARSING ====================
 
-@app.template_filter('fromjson')
-def fromjson_filter(value):
+def parse_json(value):
     """Convert JSON string to Python object"""
     if value is None:
         return None
@@ -278,6 +277,10 @@ def index():
     gallery_projects = GalleryProject.query.limit(4).all()
     approved_feedbacks = Feedback.query.filter_by(is_approved=True).limit(6).all()
     
+    # Parse JSON images for gallery projects
+    for project in gallery_projects:
+        project.images_list = parse_json(project.images) or []
+    
     # Get stats for display
     total_installations = GalleryProject.query.count()
     total_clients = User.query.filter_by(user_type='client').count()
@@ -499,6 +502,9 @@ def application_status(app_id):
         flash('Access denied', 'danger')
         return redirect(url_for('client_dashboard'))
     
+    # Parse JSON documents
+    application.docs_dict = parse_json(application.documents) or {}
+    
     return render_template('application_status.html', application=application)
 
 # ==================== SIMPLE SOLAR SETUP ROUTE ====================
@@ -584,6 +590,9 @@ def product_detail(product_id):
     """Product detail page"""
     product = Product.query.get_or_404(product_id)
     related_products = Product.query.filter_by(category=product.category).filter(Product.id != product_id).limit(4).all()
+    
+    # Parse JSON specifications
+    product.specs_dict = parse_json(product.specifications) or {}
     
     return render_template('product_detail.html', product=product, related_products=related_products)
 
@@ -795,12 +804,18 @@ def gallery():
     else:
         projects = GalleryProject.query.filter_by(category=category).order_by(GalleryProject.completion_date.desc()).all()
     
+    # Parse JSON images for projects
+    for project in projects:
+        project.images_list = parse_json(project.images) or []
+    
     return render_template('gallery.html', projects=projects, category=category)
 
 @app.route('/gallery/project/<int:project_id>')
 def gallery_project_detail(project_id):
     """Gallery project detail"""
     project = GalleryProject.query.get_or_404(project_id)
+    # Parse JSON images
+    project.images_list = parse_json(project.images) or []
     return render_template('project_detail.html', project=project)
 
 # ==================== AI SOLAR CALCULATOR ROUTE ====================
@@ -972,6 +987,9 @@ def admin_application_detail(app_id):
         flash('Application updated successfully', 'success')
         return redirect(url_for('admin_applications'))
     
+    # Parse JSON documents
+    application.docs_dict = parse_json(application.documents) or {}
+    
     return render_template('admin_application_detail.html', application=application)
 
 # ==================== ADMIN ORDER MANAGEMENT ====================
@@ -1043,6 +1061,9 @@ def admin_maintenance_detail(req_id):
 def admin_gallery():
     """Manage gallery projects"""
     projects = GalleryProject.query.order_by(GalleryProject.created_at.desc()).all()
+    # Parse JSON images for projects
+    for project in projects:
+        project.images_list = parse_json(project.images) or []
     return render_template('admin_gallery.html', projects=projects)
 
 @app.route('/admin/gallery/add', methods=['GET', 'POST'])
@@ -1118,6 +1139,9 @@ def admin_edit_gallery(project_id):
         db.session.commit()
         flash('Gallery project updated successfully', 'success')
         return redirect(url_for('admin_gallery'))
+    
+    # Parse JSON images
+    project.images_list = parse_json(project.images) or []
     
     return render_template('admin_edit_gallery.html', project=project)
 
