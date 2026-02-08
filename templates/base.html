@@ -5,20 +5,85 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{{ company_name }}{% endblock %}</title>
     
-    <!-- Google Fonts -->
+    <!-- Preconnect for faster resource loading -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    
+    <!-- Critical inline CSS for instant first paint -->
+    <style>
+        :root{--bg-primary:#fff;--bg-secondary:#f8fafc;--bg-tertiary:#f1f5f9;--text-primary:#0f172a;--border-color:#e2e8f0;--primary-color:#1a5f2a;--radius-md:0.5rem;--radius-lg:0.75rem}
+        [data-theme="dark"]{--bg-primary:#0f172a;--bg-secondary:#1e293b;--bg-tertiary:#334155;--text-primary:#f8fafc;--border-color:#334155}
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'Source Sans Pro',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg-primary);color:var(--text-primary)}
+        #skeleton-screen{position:fixed;inset:0;z-index:9998;background:var(--bg-primary);display:flex;flex-direction:column}
+        .skeleton-nav{height:70px;background:var(--bg-secondary);display:flex;align-items:center;padding:0 2rem;gap:2rem}
+        .skeleton-box{background:linear-gradient(90deg,var(--bg-tertiary) 25%,var(--bg-secondary) 50%,var(--bg-tertiary) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:var(--radius-md)}
+        .skeleton-hero{height:60vh;background:linear-gradient(135deg,var(--bg-tertiary),var(--bg-secondary));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;padding:2rem}
+        .skeleton-content{max-width:1400px;margin:2rem auto;padding:0 2rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem}
+        .skeleton-card{height:250px;background:var(--bg-secondary);border-radius:var(--radius-lg);overflow:hidden}
+        .skeleton-card-image{height:140px;background:linear-gradient(90deg,var(--bg-tertiary) 25%,var(--bg-secondary) 50%,var(--bg-tertiary) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite}
+        .skeleton-card-body{padding:1rem;display:flex;flex-direction:column;gap:0.5rem}
+        @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+        #skeleton-screen.skeleton-fade-out{opacity:0;transition:opacity 0.4s ease;pointer-events:none}
+    </style>
+    
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Source+Sans+Pro:wght@300;400;600&display=swap" rel="stylesheet">
     
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- AOS - Animate On Scroll (Trending CSS Library) -->
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css">
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     
+    <!-- Premium Design System -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/premium.css') }}">
+    
     {% block extra_css %}{% endblock %}
+    
+    <!-- Apply saved theme instantly to prevent flash -->
+    <script>
+        (function(){
+            var t=localStorage.getItem('theme')||'light';
+            document.documentElement.setAttribute('data-theme',t);
+        })();
+    </script>
 </head>
 <body>
+    <!-- Skeleton Screen - Shows instantly while page loads -->
+    <div id="skeleton-screen" aria-hidden="true">
+        <div class="skeleton-nav">
+            <div class="skeleton-box" style="width:150px;height:35px"></div>
+            <div style="flex:1"></div>
+            <div class="skeleton-box" style="width:80px;height:28px"></div>
+            <div class="skeleton-box" style="width:80px;height:28px"></div>
+            <div class="skeleton-box" style="width:80px;height:28px"></div>
+            <div class="skeleton-box" style="width:80px;height:28px"></div>
+            <div class="skeleton-box" style="width:36px;height:36px;border-radius:50%"></div>
+        </div>
+        <div class="skeleton-hero">
+            <div class="skeleton-box" style="width:60%;max-width:500px;height:48px"></div>
+            <div class="skeleton-box" style="width:40%;max-width:350px;height:24px"></div>
+            <div class="skeleton-box" style="width:30%;max-width:250px;height:20px"></div>
+            <div style="display:flex;gap:1rem;margin-top:1rem">
+                <div class="skeleton-box" style="width:160px;height:44px;border-radius:8px"></div>
+                <div class="skeleton-box" style="width:160px;height:44px;border-radius:8px"></div>
+            </div>
+        </div>
+        <div class="skeleton-content">
+            <div class="skeleton-card"><div class="skeleton-card-image"></div><div class="skeleton-card-body"><div class="skeleton-box" style="width:70%;height:16px"></div><div class="skeleton-box" style="width:100%;height:12px"></div><div class="skeleton-box" style="width:40%;height:12px"></div></div></div>
+            <div class="skeleton-card"><div class="skeleton-card-image"></div><div class="skeleton-card-body"><div class="skeleton-box" style="width:60%;height:16px"></div><div class="skeleton-box" style="width:90%;height:12px"></div><div class="skeleton-box" style="width:50%;height:12px"></div></div></div>
+            <div class="skeleton-card"><div class="skeleton-card-image"></div><div class="skeleton-card-body"><div class="skeleton-box" style="width:80%;height:16px"></div><div class="skeleton-box" style="width:100%;height:12px"></div><div class="skeleton-box" style="width:45%;height:12px"></div></div></div>
+            <div class="skeleton-card"><div class="skeleton-card-image"></div><div class="skeleton-card-body"><div class="skeleton-box" style="width:65%;height:16px"></div><div class="skeleton-box" style="width:85%;height:12px"></div><div class="skeleton-box" style="width:55%;height:12px"></div></div></div>
+        </div>
+    </div>
+
     <!-- Navigation -->
     <nav class="navbar" id="navbar">
         <div class="nav-container">
@@ -36,6 +101,20 @@
                 <li><a href="{{ url_for('products') }}" class="nav-link {% if request.endpoint == 'products' %}active{% endif %}">Products</a></li>
                 <li><a href="{{ url_for('gallery') }}" class="nav-link {% if request.endpoint == 'gallery' %}active{% endif %}">Gallery</a></li>
                 <li><a href="{{ url_for('solar_calculator') }}" class="nav-link {% if request.endpoint == 'solar_calculator' %}active{% endif %}">AI Calculator</a></li>
+                
+                {% if session.user_id %}
+                    <li class="nav-dropdown">
+                        <a href="#" class="nav-link {% if request.endpoint in ['apply_metering', 'apply_solar_setup', 'maintenance', 'feedback'] %}active{% endif %}">
+                            Services <i class="fas fa-chevron-down" style="font-size:0.7em;margin-left:4px"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{{ url_for('apply_metering') }}"><i class="fas fa-solar-panel"></i> Net/Gross Metering</a></li>
+                            <li><a href="{{ url_for('apply_solar_setup') }}"><i class="fas fa-sun"></i> Simple Solar Setup</a></li>
+                            <li><a href="{{ url_for('maintenance') }}"><i class="fas fa-tools"></i> Maintenance</a></li>
+                            <li><a href="{{ url_for('feedback') }}"><i class="fas fa-comment"></i> Feedback</a></li>
+                        </ul>
+                    </li>
+                {% endif %}
                 
                 {% if session.user_id %}
                     {% if session.user_type == 'admin' %}
@@ -109,6 +188,7 @@
                     <ul>
                         <li><a href="{{ url_for('apply_metering') }}">Net Metering</a></li>
                         <li><a href="{{ url_for('apply_metering') }}">Gross Metering</a></li>
+                        <li><a href="{{ url_for('apply_solar_setup') }}">Simple Solar Setup</a></li>
                         <li><a href="{{ url_for('maintenance') }}">Maintenance</a></li>
                         <li><a href="{{ url_for('products') }}">Solar Products</a></li>
                     </ul>
@@ -132,8 +212,69 @@
         </div>
     </footer>
     
+    <!-- AOS - Animate On Scroll Library (Trending) -->
+    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+    
+    <!-- GSAP - GreenSock Animation Platform (Industry Standard) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    
+    <!-- TurboDOM - React-like Instant Loading Engine -->
+    <script src="{{ url_for('static', filename='js/turbo.js') }}"></script>
+    
     <!-- JavaScript -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
+    <!-- Initialize AOS & GSAP -->
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 700,
+            easing: 'ease-out-cubic',
+            once: true,
+            offset: 80,
+            delay: 0
+        });
+        
+        // Re-init AOS on TurboDOM navigation
+        document.addEventListener('turbo:load', function() {
+            AOS.refreshHard();
+        });
+        
+        // GSAP ScrollTrigger for premium effects
+        if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+            gsap.registerPlugin(ScrollTrigger);
+            
+            // Parallax hero image
+            gsap.utils.toArray('.hero-bg img, .cta-bg img').forEach(img => {
+                gsap.to(img, {
+                    yPercent: 20,
+                    ease: 'none',
+                    scrollTrigger: {
+                        trigger: img.closest('section') || img.parentElement,
+                        start: 'top top',
+                        end: 'bottom top',
+                        scrub: 1
+                    }
+                });
+            });
+            
+            // Section headers fade in
+            gsap.utils.toArray('.section-header').forEach(header => {
+                gsap.from(header, {
+                    y: 40,
+                    opacity: 0,
+                    duration: 0.8,
+                    ease: 'power3.out',
+                    scrollTrigger: {
+                        trigger: header,
+                        start: 'top 85%',
+                        toggleActions: 'play none none none'
+                    }
+                });
+            });
+        }
+    </script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>

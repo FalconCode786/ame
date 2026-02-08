@@ -106,6 +106,10 @@
                             <i class="fas fa-shopping-cart"></i>
                             <span>Shop Products</span>
                         </a>
+                        <a href="{{ url_for('apply_solar_setup') }}" class="action-card">
+                            <i class="fas fa-sun"></i>
+                            <span>Simple Solar Setup</span>
+                        </a>
                         <a href="{{ url_for('maintenance') }}" class="action-card">
                             <i class="fas fa-wrench"></i>
                             <span>Request Maintenance</span>
@@ -168,7 +172,7 @@
                             {% for app in applications %}
                             <tr>
                                 <td><strong>{{ app.reference_number }}</strong></td>
-                                <td>{{ app.application_type|title }} Metering</td>
+                                <td>{% if app.application_type == 'simple_solar' %}Solar Setup{% else %}{{ app.application_type|title }} Metering{% endif %}</td>
                                 <td>{{ app.system_capacity }} kW</td>
                                 <td>
                                     <span class="status-badge status-{{ app.status }}">

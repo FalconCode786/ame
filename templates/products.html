@@ -9,7 +9,7 @@
             <img src="{{ url_for('static', filename='images/solar-panel-1.jpg') }}" alt="Solar Products">
             <div class="products-hero-overlay"></div>
         </div>
-        <div class="products-hero-content">
+        <div class="products-hero-content" data-aos="fade-up">
             <h1>Solar Products</h1>
             <p>Premium quality solar equipment for your installation</p>
         </div>
@@ -33,7 +33,7 @@
         
         <div class="products-grid">
             {% for product in products %}
-            <div class="product-card">
+            <div class="product-card" data-aos="fade-up" data-aos-delay="{{ (loop.index0 % 4) * 80 }}">
                 <div class="product-badge">
                     {% if product.stock_quantity > 0 %}
                         <span class="badge in-stock"><i class="fas fa-check"></i> In Stock</span>

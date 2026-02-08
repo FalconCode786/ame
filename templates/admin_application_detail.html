@@ -65,7 +65,7 @@
                     </div>
                     <div class="detail-item">
                         <span class="detail-label">Application Type:</span>
-                        <span class="detail-value">{{ application.application_type|title }} Metering</span>
+                        <span class="detail-value">{% if application.application_type == 'simple_solar' %}Simple Solar Setup{% else %}{{ application.application_type|title }} Metering{% endif %}</span>
                     </div>
                     <div class="detail-item">
                         <span class="detail-label">System Capacity:</span>
@@ -121,7 +121,45 @@
                 <h3>Property Address</h3>
             </div>
             <p>{{ application.property_address }}</p>
+            {% if application.ownership_type %}
+            <p style="margin-top:0.5rem"><strong>Ownership:</strong> {{ application.ownership_type|title }}</p>
+            {% endif %}
         </div>
+        
+        <!-- Uploaded Documents -->
+        {% if application.documents %}
+        {% set docs = application.documents|fromjson %}
+        {% if docs %}
+        <div class="admin-card">
+            <div class="card-header">
+                <h3><i class="fas fa-file-alt"></i> Uploaded Documents</h3>
+            </div>
+            <div class="documents-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;padding:1rem">
+                {% for doc_type, doc_path in docs.items() %}
+                <div class="doc-card" style="border:1px solid var(--border-color);border-radius:var(--radius-md);padding:1rem;text-align:center">
+                    <i class="fas fa-file-image" style="font-size:2rem;color:var(--primary-color);margin-bottom:0.5rem;display:block"></i>
+                    <p style="font-weight:600;margin-bottom:0.5rem;text-transform:capitalize">{{ doc_type|replace('_', ' ') }}</p>
+                    <a href="{{ url_for('static', filename='images/' + doc_path) }}" target="_blank" class="btn btn-outline" style="font-size:0.85rem;padding:0.4rem 0.8rem">
+                        <i class="fas fa-eye"></i> View
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        {% endif %}
+        
+        <!-- NOC Message for Tenants -->
+        {% if application.ownership_type == 'tenant' and application.noc_message %}
+        <div class="admin-card">
+            <div class="card-header">
+                <h3><i class="fas fa-envelope-open-text"></i> NOC Message (Tenant)</h3>
+            </div>
+            <div style="padding:1rem;background:var(--bg-tertiary);border-radius:var(--radius-md);margin:0.5rem 0">
+                <p>{{ application.noc_message }}</p>
+            </div>
+        </div>
+        {% endif %}
         
         <div class="admin-card">
             <div class="card-header">

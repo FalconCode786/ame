@@ -1,0 +1,357 @@
+{% extends 'base.html' %}
+
+{% block title %}Simple Solar Setup - Al Muslim Engineers{% endblock %}
+
+{% block extra_css %}
+<style>
+    .upload-zone {
+        border: 2px dashed var(--border-color);
+        border-radius: var(--radius-lg, 0.75rem);
+        padding: 1.5rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: var(--bg-secondary);
+        position: relative;
+    }
+    .upload-zone:hover, .upload-zone.dragover {
+        border-color: var(--primary-color);
+        background: rgba(26, 95, 42, 0.05);
+        transform: translateY(-2px);
+    }
+    .upload-zone.has-file {
+        border-color: var(--success-color, #10b981);
+        background: rgba(16, 185, 129, 0.05);
+    }
+    .upload-zone input[type="file"] {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+    }
+    .upload-zone .upload-icon {
+        font-size: 2rem;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+    .upload-zone .upload-label {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.25rem;
+    }
+    .upload-zone .upload-hint {
+        font-size: 0.85rem;
+        color: var(--text-secondary, #64748b);
+    }
+    .upload-zone .file-name {
+        display: none;
+        font-size: 0.85rem;
+        color: var(--success-color, #10b981);
+        font-weight: 600;
+        margin-top: 0.5rem;
+    }
+    .upload-zone.has-file .file-name { display: block; }
+    .upload-zone .file-preview {
+        display: none;
+        max-width: 120px;
+        max-height: 80px;
+        margin: 0.5rem auto 0;
+        border-radius: 0.375rem;
+        object-fit: cover;
+    }
+    .upload-zone.has-file .file-preview { display: block; }
+    .docs-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 1rem;
+    }
+    .required-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        font-size: 0.75rem;
+        padding: 0.15rem 0.5rem;
+        border-radius: 999px;
+        font-weight: 600;
+    }
+    .section-divider {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin: 2rem 0 1.5rem;
+    }
+    .section-divider::before, .section-divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--border-color);
+    }
+    .section-divider span {
+        font-weight: 700;
+        color: var(--primary-color);
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        white-space: nowrap;
+    }
+    .solar-benefits {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    .benefit-card {
+        background: var(--bg-secondary);
+        border-radius: var(--radius-lg, 0.75rem);
+        padding: 1.25rem;
+        text-align: center;
+        border: 1px solid var(--border-color);
+        transition: transform 0.3s ease;
+    }
+    .benefit-card:hover { transform: translateY(-3px); }
+    .benefit-card i {
+        font-size: 2rem;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    .benefit-card h4 {
+        font-size: 0.95rem;
+        margin-bottom: 0.25rem;
+    }
+    .benefit-card p {
+        font-size: 0.85rem;
+        color: var(--text-secondary, #64748b);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="form-section">
+    <div class="form-bg">
+        <img src="{{ url_for('static', filename='images/hero-bg.jpg') }}" alt="Solar Setup">
+        <div class="form-overlay"></div>
+    </div>
+    
+    <div class="form-container">
+        <div class="form-card form-card-large" data-aos="fade-up" data-aos-duration="600">
+            <div class="form-header">
+                <div class="form-icon">
+                    <i class="fas fa-sun"></i>
+                </div>
+                <h1>Simple Solar Setup</h1>
+                <p>Quick application for residential solar panel installation</p>
+            </div>
+            
+            <!-- Benefits -->
+            <div class="solar-benefits" data-aos="fade-up" data-aos-delay="100">
+                <div class="benefit-card">
+                    <i class="fas fa-bolt"></i>
+                    <h4>Save on Bills</h4>
+                    <p>Reduce electricity costs by up to 90%</p>
+                </div>
+                <div class="benefit-card">
+                    <i class="fas fa-leaf"></i>
+                    <h4>Go Green</h4>
+                    <p>Clean, renewable energy for your home</p>
+                </div>
+                <div class="benefit-card">
+                    <i class="fas fa-tools"></i>
+                    <h4>Full Setup</h4>
+                    <p>Installation, wiring & maintenance</p>
+                </div>
+                <div class="benefit-card">
+                    <i class="fas fa-file-alt"></i>
+                    <h4>Easy Apply</h4>
+                    <p>Just CNIC & electricity bill needed</p>
+                </div>
+            </div>
+            
+            <form class="application-form" method="POST" action="{{ url_for('apply_solar_setup') }}" enctype="multipart/form-data">
+                
+                <div class="form-section-title">
+                    <i class="fas fa-clipboard-list"></i> Setup Details
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="system_capacity">
+                            <i class="fas fa-bolt"></i> Desired System Size (kW) <span class="required">*</span>
+                        </label>
+                        <select id="system_capacity" name="system_capacity" required>
+                            <option value="">Select Size</option>
+                            <option value="1">1 kW - Small Home</option>
+                            <option value="2">2 kW - Medium Home</option>
+                            <option value="3">3 kW - Large Home</option>
+                            <option value="5">5 kW - Extra Large</option>
+                            <option value="7">7 kW - Small Commercial</option>
+                            <option value="10">10 kW - Commercial</option>
+                            <option value="15">15 kW - Large Commercial</option>
+                            <option value="20">20 kW - Industrial</option>
+                        </select>
+                        <small class="form-hint">Our team will confirm the best size during site visit</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="property_type">
+                            <i class="fas fa-building"></i> Property Type <span class="required">*</span>
+                        </label>
+                        <select id="property_type" name="property_type" required>
+                            <option value="">Select Type</option>
+                            <option value="residential">Residential</option>
+                            <option value="commercial">Commercial</option>
+                            <option value="industrial">Industrial</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="consumption_units">
+                            <i class="fas fa-chart-bar"></i> Monthly Electricity Units
+                        </label>
+                        <input type="number" id="consumption_units" name="consumption_units" 
+                               placeholder="e.g., 300">
+                        <small class="form-hint">Check your electricity bill for this info</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="property_address">
+                            <i class="fas fa-map-marker-alt"></i> Installation Address <span class="required">*</span>
+                        </label>
+                        <input type="text" id="property_address" name="property_address" required
+                               placeholder="Full address in Rawalpindi">
+                    </div>
+                </div>
+                
+                <!-- Document Uploads -->
+                <div class="section-divider">
+                    <span><i class="fas fa-cloud-upload-alt"></i> Upload Documents</span>
+                </div>
+                
+                <p style="margin-bottom:1rem;color:var(--text-secondary, #64748b);font-size:0.9rem">
+                    <i class="fas fa-info-circle" style="color:var(--primary-color)"></i> 
+                    Only your <strong>CNIC</strong> and <strong>recent electricity bill</strong> are required for a simple solar setup.
+                </p>
+                
+                <div class="docs-grid">
+                    <div class="upload-zone" data-field="electricity_bill">
+                        <input type="file" name="electricity_bill" accept="image/*,.pdf" required>
+                        <div class="upload-icon"><i class="fas fa-file-invoice"></i></div>
+                        <div class="upload-label">Electricity Bill</div>
+                        <div class="upload-hint">Recent month's bill</div>
+                        <span class="required-badge"><i class="fas fa-asterisk"></i> Required</span>
+                        <img class="file-preview" alt="Preview">
+                        <div class="file-name"></div>
+                    </div>
+                    
+                    <div class="upload-zone" data-field="cnic_front">
+                        <input type="file" name="cnic_front" accept="image/*,.pdf" required>
+                        <div class="upload-icon"><i class="fas fa-id-card"></i></div>
+                        <div class="upload-label">CNIC Front</div>
+                        <div class="upload-hint">Clear photo or scan</div>
+                        <span class="required-badge"><i class="fas fa-asterisk"></i> Required</span>
+                        <img class="file-preview" alt="Preview">
+                        <div class="file-name"></div>
+                    </div>
+                    
+                    <div class="upload-zone" data-field="cnic_back">
+                        <input type="file" name="cnic_back" accept="image/*,.pdf" required>
+                        <div class="upload-icon"><i class="fas fa-id-card-alt"></i></div>
+                        <div class="upload-label">CNIC Back</div>
+                        <div class="upload-hint">Clear photo or scan</div>
+                        <span class="required-badge"><i class="fas fa-asterisk"></i> Required</span>
+                        <img class="file-preview" alt="Preview">
+                        <div class="file-name"></div>
+                    </div>
+                </div>
+                
+                <!-- Cost Preview -->
+                <div class="form-section-title" style="margin-top:2rem">
+                    <i class="fas fa-calculator"></i> Estimated Cost
+                </div>
+                
+                <div class="cost-estimate" id="costEstimate">
+                    <div class="estimate-row">
+                        <span>Estimated System Cost:</span>
+                        <strong id="estimatedCost">PKR 0</strong>
+                    </div>
+                    <div class="estimate-row">
+                        <span>Estimated Annual Savings:</span>
+                        <strong id="estimatedSavings">PKR 0</strong>
+                    </div>
+                    <div class="estimate-note">
+                        <i class="fas fa-info-circle"></i> Exact cost confirmed after free site survey
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-large">
+                        <i class="fas fa-paper-plane"></i> Submit Application
+                    </button>
+                    <a href="{{ url_for('index') }}" class="btn btn-outline">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // File upload preview
+    document.querySelectorAll('.upload-zone input[type="file"]').forEach(input => {
+        input.addEventListener('change', function() {
+            const zone = this.closest('.upload-zone');
+            const preview = zone.querySelector('.file-preview');
+            const nameEl = zone.querySelector('.file-name');
+            
+            if (this.files && this.files[0]) {
+                const file = this.files[0];
+                zone.classList.add('has-file');
+                nameEl.textContent = '\u2713 ' + file.name;
+                
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    preview.style.display = 'none';
+                }
+            } else {
+                zone.classList.remove('has-file');
+            }
+        });
+        
+        const zone = input.closest('.upload-zone');
+        zone.addEventListener('dragover', function(e) { e.preventDefault(); zone.classList.add('dragover'); });
+        zone.addEventListener('dragleave', function() { zone.classList.remove('dragover'); });
+        zone.addEventListener('drop', function() { zone.classList.remove('dragover'); });
+    });
+    
+    // Cost estimate
+    function updateCostEstimate() {
+        const capacity = parseFloat(document.getElementById('system_capacity').value) || 0;
+        const costPerKw = 80000;
+        
+        if (capacity > 0) {
+            const totalCost = capacity * costPerKw;
+            const annualSavings = capacity * 60000;
+            document.getElementById('estimatedCost').textContent = 'PKR ' + totalCost.toLocaleString();
+            document.getElementById('estimatedSavings').textContent = 'PKR ' + annualSavings.toLocaleString();
+        } else {
+            document.getElementById('estimatedCost').textContent = 'PKR 0';
+            document.getElementById('estimatedSavings').textContent = 'PKR 0';
+        }
+    }
+    
+    document.getElementById('system_capacity').addEventListener('change', updateCostEstimate);
+</script>
+{% endblock %}

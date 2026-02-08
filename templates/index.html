@@ -10,10 +10,10 @@
         <div class="hero-overlay"></div>
     </div>
     <div class="hero-content">
-        <h1 class="hero-title">Power Your Future with <span>Clean Energy</span></h1>
-        <p class="hero-subtitle">Pakistan's Leading Solar Solutions Provider in Rawalpindi</p>
-        <p class="hero-description">From 1kW to 50kW solar systems, we provide complete net metering and gross metering solutions for residential, commercial, and industrial clients.</p>
-        <div class="hero-buttons">
+        <h1 class="hero-title" data-aos="fade-up" data-aos-duration="800">Power Your Future with <span>Clean Energy</span></h1>
+        <p class="hero-subtitle" data-aos="fade-up" data-aos-delay="100" data-aos-duration="800">Pakistan's Leading Solar Solutions Provider in Rawalpindi</p>
+        <p class="hero-description" data-aos="fade-up" data-aos-delay="200" data-aos-duration="800">From 1kW to 50kW solar systems, we provide complete net metering and gross metering solutions for residential, commercial, and industrial clients.</p>
+        <div class="hero-buttons" data-aos="fade-up" data-aos-delay="300" data-aos-duration="800">
             <a href="{{ url_for('solar_calculator') }}" class="btn btn-primary">
                 <i class="fas fa-calculator"></i> AI Solar Calculator
             </a>
@@ -22,7 +22,7 @@
             </a>
         </div>
     </div>
-    <div class="hero-stats">
+    <div class="hero-stats" data-aos="fade-up" data-aos-delay="400" data-aos-duration="800">
         <div class="stat-item">
             <span class="stat-number">{{ stats.installations }}+</span>
             <span class="stat-label">Installations</span>
@@ -51,7 +51,7 @@
         </div>
         
         <div class="services-grid">
-            <div class="service-card">
+            <div class="service-card" data-aos="fade-up" data-aos-delay="0">
                 <div class="service-icon">
                     <i class="fas fa-bolt"></i>
                 </div>
@@ -60,7 +60,7 @@
                 <a href="{{ url_for('apply_metering') }}" class="service-link">Apply Now <i class="fas fa-arrow-right"></i></a>
             </div>
             
-            <div class="service-card">
+            <div class="service-card" data-aos="fade-up" data-aos-delay="100">
                 <div class="service-icon">
                     <i class="fas fa-exchange-alt"></i>
                 </div>
@@ -69,7 +69,16 @@
                 <a href="{{ url_for('apply_metering') }}" class="service-link">Apply Now <i class="fas fa-arrow-right"></i></a>
             </div>
             
-            <div class="service-card">
+            <div class="service-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="service-icon">
+                    <i class="fas fa-sun"></i>
+                </div>
+                <h3>Simple Solar Setup</h3>
+                <p>Quick & easy solar panel installation for your home. Just upload CNIC and electricity bill to get started.</p>
+                <a href="{{ url_for('apply_solar_setup') }}" class="service-link">Apply Now <i class="fas fa-arrow-right"></i></a>
+            </div>
+            
+            <div class="service-card" data-aos="fade-up" data-aos-delay="300">
                 <div class="service-icon">
                     <i class="fas fa-tools"></i>
                 </div>
@@ -78,7 +87,7 @@
                 <a href="{{ url_for('maintenance') }}" class="service-link">Request Service <i class="fas fa-arrow-right"></i></a>
             </div>
             
-            <div class="service-card">
+            <div class="service-card" data-aos="fade-up" data-aos-delay="400">
                 <div class="service-icon">
                     <i class="fas fa-shopping-cart"></i>
                 </div>
@@ -100,35 +109,35 @@
         </div>
         
         <div class="steps-grid">
-            <div class="step-card">
+            <div class="step-card" data-aos="fade-up" data-aos-delay="0">
                 <div class="step-number">01</div>
                 <div class="step-icon"><i class="fas fa-calculator"></i></div>
                 <h3>Calculate Savings</h3>
                 <p>Use our AI calculator to determine the perfect system size for your needs</p>
             </div>
             
-            <div class="step-card">
+            <div class="step-card" data-aos="fade-up" data-aos-delay="100">
                 <div class="step-number">02</div>
                 <div class="step-icon"><i class="fas fa-file-alt"></i></div>
                 <h3>Apply Online</h3>
                 <p>Submit your metering application with required details</p>
             </div>
             
-            <div class="step-card">
+            <div class="step-card" data-aos="fade-up" data-aos-delay="200">
                 <div class="step-number">03</div>
                 <div class="step-icon"><i class="fas fa-clipboard-check"></i></div>
                 <h3>Site Survey</h3>
                 <p>Our engineers visit your property for technical assessment</p>
             </div>
             
-            <div class="step-card">
+            <div class="step-card" data-aos="fade-up" data-aos-delay="300">
                 <div class="step-number">04</div>
                 <div class="step-icon"><i class="fas fa-cogs"></i></div>
                 <h3>Installation</h3>
                 <p>Professional installation by certified technicians</p>
             </div>
             
-            <div class="step-card">
+            <div class="step-card" data-aos="fade-up" data-aos-delay="400">
                 <div class="step-number">05</div>
                 <div class="step-icon"><i class="fas fa-plug"></i></div>
                 <h3>Grid Connection</h3>
@@ -149,7 +158,7 @@
         
         <div class="products-grid">
             {% for product in featured_products %}
-            <div class="product-card">
+            <div class="product-card" data-aos="fade-up" data-aos-delay="{{ loop.index0 * 100 }}">
                 <div class="product-image">
                     {% if product.image %}
                         <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}">
@@ -185,12 +194,12 @@
         <div class="cta-overlay"></div>
     </div>
     <div class="cta-content">
-        <div class="cta-icon">
+        <div class="cta-icon" data-aos="zoom-in">
             <i class="fas fa-robot"></i>
         </div>
-        <h2>AI-Powered Solar Calculator</h2>
-        <p>Get personalized solar recommendations based on your electricity bill, roof area, and energy consumption. Our AI analyzes your requirements and suggests the optimal system size.</p>
-        <ul class="cta-features">
+        <h2 data-aos="fade-up" data-aos-delay="100">AI-Powered Solar Calculator</h2>
+        <p data-aos="fade-up" data-aos-delay="200">Get personalized solar recommendations based on your electricity bill, roof area, and energy consumption. Our AI analyzes your requirements and suggests the optimal system size.</p>
+        <ul class="cta-features" data-aos="fade-up" data-aos-delay="300">
             <li><i class="fas fa-check"></i> System size recommendation</li>
             <li><i class="fas fa-check"></i> Cost estimation</li>
             <li><i class="fas fa-check"></i> Savings calculation</li>
@@ -286,22 +295,22 @@
 <section class="contact-info">
     <div class="section-container">
         <div class="contact-grid">
-            <div class="contact-card">
+            <div class="contact-card" data-aos="fade-up" data-aos-delay="0">
                 <i class="fas fa-map-marker-alt"></i>
                 <h3>Visit Us</h3>
                 <p>Main Office, Saddar<br>Rawalpindi, Pakistan</p>
             </div>
-            <div class="contact-card">
+            <div class="contact-card" data-aos="fade-up" data-aos-delay="100">
                 <i class="fas fa-phone-alt"></i>
                 <h3>Call Us</h3>
                 <p>+92-300-1234567<br>Mon - Sat, 9AM - 6PM</p>
             </div>
-            <div class="contact-card">
+            <div class="contact-card" data-aos="fade-up" data-aos-delay="200">
                 <i class="fas fa-envelope"></i>
                 <h3>Email Us</h3>
                 <p>info@almuslimengineers.com<br>support@almuslimengineers.com</p>
             </div>
-            <div class="contact-card">
+            <div class="contact-card" data-aos="fade-up" data-aos-delay="300">
                 <i class="fas fa-clock"></i>
                 <h3>Working Hours</h3>
                 <p>Monday - Saturday<br>9:00 AM - 6:00 PM</p>

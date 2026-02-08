@@ -14,7 +14,10 @@ import random
 import json
 
 # Initialize Flask App
-app = Flask(__name__)
+basedir = os.path.abspath(os.path.dirname(__file__))
+app = Flask(__name__,
+            template_folder=os.path.join(basedir, 'templates'),
+            static_folder=os.path.join(basedir, 'static'))
 app.config['SECRET_KEY'] = 'al-muslim-engineers-solar-solutions-2024-rawalpindi'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///solar_app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -78,25 +81,28 @@ class Product(db.Model):
     order_items = db.relationship('OrderItem', backref='product', lazy=True)
 
 class MeteringApplication(db.Model):
-    """Net and Gross Metering Applications"""
+    """Net, Gross Metering & Simple Solar Setup Applications"""
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    application_type = db.Column(db.String(20), nullable=False)  # 'net' or 'gross'
+    application_type = db.Column(db.String(20), nullable=False)  # 'net', 'gross', or 'simple_solar'
     system_capacity = db.Column(db.Float, nullable=False)  # in kW
     consumption_units = db.Column(db.Integer)  # monthly units consumed
     property_type = db.Column(db.String(50))  # residential, commercial, industrial
     property_address = db.Column(db.String(200), nullable=False)
+    ownership_type = db.Column(db.String(20), default='owner')  # 'owner' or 'tenant'
     reference_number = db.Column(db.String(20), unique=True)
     status = db.Column(db.String(20), default='pending')  # pending, under_review, approved, rejected, completed
     submitted_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow)
     documents = db.Column(db.Text)  # JSON string of document paths
+    noc_message = db.Column(db.Text)  # NOC message for tenants
     admin_notes = db.Column(db.Text)
     estimated_cost = db.Column(db.Float)
     
     def generate_reference(self):
         """Generate unique reference number"""
-        prefix = 'NET' if self.application_type == 'net' else 'GROSS'
+        prefixes = {'net': 'NET', 'gross': 'GROSS', 'simple_solar': 'SOL'}
+        prefix = prefixes.get(self.application_type, 'APP')
         timestamp = datetime.now().strftime('%Y%m%d')
         random_num = random.randint(1000, 9999)
         return f"{prefix}-{timestamp}-{random_num}"
@@ -404,6 +410,8 @@ def apply_metering():
         consumption_units = int(request.form.get('consumption_units', 0))
         property_type = request.form.get('property_type')
         property_address = request.form.get('property_address')
+        ownership_type = request.form.get('ownership_type', 'owner')
+        noc_message = request.form.get('noc_message', '')
         
         # Validation
         if not all([application_type, system_capacity, property_address]):
@@ -420,6 +428,42 @@ def apply_metering():
             flash('Net metering requires system capacity of 5kW or greater', 'danger')
             return redirect(url_for('apply_metering'))
         
+        # Handle document uploads
+        uploaded_docs = {}
+        doc_fields = ['electricity_bill', 'cnic_front', 'cnic_back']
+        
+        # Owner needs land ownership doc, tenant needs NOC (stamp paper or message)
+        if ownership_type == 'owner':
+            doc_fields.append('land_ownership')
+        else:
+            doc_fields.append('noc_document')
+        
+        for field in doc_fields:
+            if field in request.files:
+                file = request.files[field]
+                if file and file.filename:
+                    filename = secure_filename(file.filename)
+                    timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+                    rand = random.randint(1000, 9999)
+                    filename = f"{field}_{timestamp}_{rand}_{filename}"
+                    filepath = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'], filename)
+                    file.save(filepath)
+                    uploaded_docs[field] = f"uploads/{filename}"
+        
+        # Validate required documents
+        required_docs = ['electricity_bill', 'cnic_front', 'cnic_back']
+        if ownership_type == 'owner':
+            required_docs.append('land_ownership')
+        # Tenant can provide NOC document OR noc_message
+        elif ownership_type == 'tenant' and 'noc_document' not in uploaded_docs and not noc_message.strip():
+            flash('Tenants must provide either a NOC document (stamp paper) or a NOC message', 'danger')
+            return redirect(url_for('apply_metering'))
+        
+        missing = [d.replace('_', ' ').title() for d in required_docs if d not in uploaded_docs]
+        if missing:
+            flash(f'Please upload required documents: {", ".join(missing)}', 'danger')
+            return redirect(url_for('apply_metering'))
+        
         # Create application
         application = MeteringApplication(
             user_id=session['user_id'],
@@ -428,6 +472,9 @@ def apply_metering():
             consumption_units=consumption_units,
             property_type=property_type,
             property_address=property_address,
+            ownership_type=ownership_type,
+            documents=json.dumps(uploaded_docs),
+            noc_message=noc_message if ownership_type == 'tenant' else None,
             estimated_cost=system_capacity * 80000  # Approximate cost
         )
         
@@ -453,6 +500,70 @@ def application_status(app_id):
         return redirect(url_for('client_dashboard'))
     
     return render_template('application_status.html', application=application)
+
+# ==================== SIMPLE SOLAR SETUP ROUTE ====================
+
+@app.route('/apply-solar-setup', methods=['GET', 'POST'])
+@login_required
+def apply_solar_setup():
+    """Apply for Simple Solar Setup - requires only CNIC and electricity bill"""
+    if request.method == 'POST':
+        system_capacity = float(request.form.get('system_capacity', 0))
+        property_address = request.form.get('property_address', '')
+        property_type = request.form.get('property_type', 'residential')
+        consumption_units = int(request.form.get('consumption_units', 0))
+        
+        # Validation
+        if not all([system_capacity, property_address]):
+            flash('All required fields must be filled', 'danger')
+            return redirect(url_for('apply_solar_setup'))
+        
+        if system_capacity < 1 or system_capacity > 50:
+            flash('System capacity must be between 1kW and 50kW', 'danger')
+            return redirect(url_for('apply_solar_setup'))
+        
+        # Handle document uploads (only CNIC and electricity bill)
+        uploaded_docs = {}
+        for field in ['electricity_bill', 'cnic_front', 'cnic_back']:
+            if field in request.files:
+                file = request.files[field]
+                if file and file.filename:
+                    filename = secure_filename(file.filename)
+                    timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+                    rand = random.randint(1000, 9999)
+                    filename = f"{field}_{timestamp}_{rand}_{filename}"
+                    filepath = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'], filename)
+                    file.save(filepath)
+                    uploaded_docs[field] = f"uploads/{filename}"
+        
+        # Validate required documents
+        missing = [d.replace('_', ' ').title() for d in ['electricity_bill', 'cnic_front', 'cnic_back'] if d not in uploaded_docs]
+        if missing:
+            flash(f'Please upload required documents: {", ".join(missing)}', 'danger')
+            return redirect(url_for('apply_solar_setup'))
+        
+        # Create application
+        application = MeteringApplication(
+            user_id=session['user_id'],
+            application_type='simple_solar',
+            system_capacity=system_capacity,
+            consumption_units=consumption_units,
+            property_type=property_type,
+            property_address=property_address,
+            ownership_type='owner',
+            documents=json.dumps(uploaded_docs),
+            estimated_cost=system_capacity * 80000
+        )
+        
+        application.reference_number = application.generate_reference()
+        
+        db.session.add(application)
+        db.session.commit()
+        
+        flash(f'Solar setup application submitted! Reference: {application.reference_number}', 'success')
+        return redirect(url_for('client_dashboard'))
+    
+    return render_template('apply_solar_setup.html')
 
 # ==================== ECOMMERCE ROUTES ====================
 
@@ -1100,6 +1211,21 @@ def init_db():
     """Initialize database with default data"""
     with app.app_context():
         db.create_all()
+        
+        # Add new columns if they don't exist (migration for existing databases)
+        try:
+            from sqlalchemy import inspect, text
+            inspector = inspect(db.engine)
+            if 'metering_application' in inspector.get_table_names():
+                columns = [col['name'] for col in inspector.get_columns('metering_application')]
+                with db.engine.connect() as conn:
+                    if 'ownership_type' not in columns:
+                        conn.execute(text("ALTER TABLE metering_application ADD COLUMN ownership_type VARCHAR(20) DEFAULT 'owner'"))
+                    if 'noc_message' not in columns:
+                        conn.execute(text("ALTER TABLE metering_application ADD COLUMN noc_message TEXT"))
+                    conn.commit()
+        except Exception as e:
+            print(f"Migration note: {e}")
         
         # Create admin user if not exists
         admin = User.query.filter_by(email='admin@almuslim.com').first()

@@ -2,6 +2,157 @@
 
 {% block title %}Apply for Metering - Al Muslim Engineers{% endblock %}
 
+{% block extra_css %}
+<style>
+    .upload-zone {
+        border: 2px dashed var(--border-color);
+        border-radius: var(--radius-lg, 0.75rem);
+        padding: 1.5rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: var(--bg-secondary);
+        position: relative;
+    }
+    .upload-zone:hover, .upload-zone.dragover {
+        border-color: var(--primary-color);
+        background: rgba(26, 95, 42, 0.05);
+        transform: translateY(-2px);
+    }
+    .upload-zone.has-file {
+        border-color: var(--success-color, #10b981);
+        background: rgba(16, 185, 129, 0.05);
+    }
+    .upload-zone input[type="file"] {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+    }
+    .upload-zone .upload-icon {
+        font-size: 2rem;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+    .upload-zone .upload-label {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.25rem;
+    }
+    .upload-zone .upload-hint {
+        font-size: 0.85rem;
+        color: var(--text-secondary, #64748b);
+    }
+    .upload-zone .file-name {
+        display: none;
+        font-size: 0.85rem;
+        color: var(--success-color, #10b981);
+        font-weight: 600;
+        margin-top: 0.5rem;
+    }
+    .upload-zone.has-file .file-name { display: block; }
+    .upload-zone .file-preview {
+        display: none;
+        max-width: 120px;
+        max-height: 80px;
+        margin: 0.5rem auto 0;
+        border-radius: 0.375rem;
+        object-fit: cover;
+    }
+    .upload-zone.has-file .file-preview { display: block; }
+
+    .docs-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 1rem;
+    }
+    .ownership-toggle {
+        display: flex;
+        gap: 0;
+        border-radius: var(--radius-lg, 0.75rem);
+        overflow: hidden;
+        border: 2px solid var(--border-color);
+        background: var(--bg-secondary);
+    }
+    .ownership-toggle label {
+        flex: 1;
+        padding: 1rem;
+        text-align: center;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .ownership-toggle label i {
+        font-size: 1.5rem;
+    }
+    .ownership-toggle input { display: none; }
+    .ownership-toggle input:checked + label {
+        background: var(--primary-color);
+        color: white;
+    }
+    .conditional-section {
+        display: none;
+        animation: fadeSlideIn 0.4s ease forwards;
+    }
+    .conditional-section.active { display: block; }
+    @keyframes fadeSlideIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .noc-textarea {
+        width: 100%;
+        min-height: 120px;
+        padding: 1rem;
+        border: 2px solid var(--border-color);
+        border-radius: 0.5rem;
+        resize: vertical;
+        font-family: inherit;
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+        transition: border-color 0.3s;
+    }
+    .noc-textarea:focus {
+        border-color: var(--primary-color);
+        outline: none;
+    }
+    .required-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        font-size: 0.75rem;
+        padding: 0.15rem 0.5rem;
+        border-radius: 999px;
+        font-weight: 600;
+    }
+    .section-divider {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin: 2rem 0 1.5rem;
+    }
+    .section-divider::before, .section-divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--border-color);
+    }
+    .section-divider span {
+        font-weight: 700;
+        color: var(--primary-color);
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        white-space: nowrap;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <section class="form-section">
     <div class="form-bg">
@@ -10,13 +161,13 @@
     </div>
     
     <div class="form-container">
-        <div class="form-card form-card-large">
+        <div class="form-card form-card-large" data-aos="fade-up" data-aos-duration="600">
             <div class="form-header">
                 <div class="form-icon">
                     <i class="fas fa-solar-panel"></i>
                 </div>
                 <h1>Apply for Metering</h1>
-                <p>Submit your net or gross metering application</p>
+                <p>Submit your net or gross metering application with required documents</p>
             </div>
             
             <div class="metering-info">
@@ -28,12 +179,14 @@
                             <li>Net Metering: Available for systems <strong>5kW and above</strong></li>
                             <li>Gross Metering: Available for systems <strong>1kW to 50kW</strong></li>
                             <li>Service Area: <strong>Rawalpindi Only</strong></li>
+                            <li>Upload <strong>clear images/scans</strong> of all required documents</li>
                         </ul>
                     </div>
                 </div>
             </div>
             
-            <form class="application-form" method="POST" action="{{ url_for('apply_metering') }}">
+            <form class="application-form" method="POST" action="{{ url_for('apply_metering') }}" enctype="multipart/form-data">
+                
                 <div class="form-section-title">
                     <i class="fas fa-list-alt"></i> Application Details
                 </div>
@@ -98,6 +251,113 @@
                     <small class="form-hint">Please provide detailed address including sector/area</small>
                 </div>
                 
+                <!-- Ownership Type Toggle -->
+                <div class="section-divider">
+                    <span><i class="fas fa-user-shield"></i> Ownership</span>
+                </div>
+                
+                <div class="form-group">
+                    <label style="margin-bottom:0.75rem;display:block">
+                        <i class="fas fa-key"></i> Are you the property owner or a tenant? <span class="required">*</span>
+                    </label>
+                    <div class="ownership-toggle">
+                        <input type="radio" id="owner" name="ownership_type" value="owner" checked>
+                        <label for="owner">
+                            <i class="fas fa-house-user"></i>
+                            Property Owner
+                        </label>
+                        <input type="radio" id="tenant" name="ownership_type" value="tenant">
+                        <label for="tenant">
+                            <i class="fas fa-user-tie"></i>
+                            Tenant
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Document Upload Section -->
+                <div class="section-divider">
+                    <span><i class="fas fa-cloud-upload-alt"></i> Required Documents</span>
+                </div>
+                
+                <div class="docs-grid">
+                    <div class="upload-zone" data-field="electricity_bill">
+                        <input type="file" name="electricity_bill" accept="image/*,.pdf" required>
+                        <div class="upload-icon"><i class="fas fa-file-invoice"></i></div>
+                        <div class="upload-label">Electricity Bill</div>
+                        <div class="upload-hint">Recent month's bill</div>
+                        <span class="required-badge"><i class="fas fa-asterisk"></i> Required</span>
+                        <img class="file-preview" alt="Preview">
+                        <div class="file-name"></div>
+                    </div>
+                    
+                    <div class="upload-zone" data-field="cnic_front">
+                        <input type="file" name="cnic_front" accept="image/*,.pdf" required>
+                        <div class="upload-icon"><i class="fas fa-id-card"></i></div>
+                        <div class="upload-label">CNIC Front</div>
+                        <div class="upload-hint">Clear photo/scan</div>
+                        <span class="required-badge"><i class="fas fa-asterisk"></i> Required</span>
+                        <img class="file-preview" alt="Preview">
+                        <div class="file-name"></div>
+                    </div>
+                    
+                    <div class="upload-zone" data-field="cnic_back">
+                        <input type="file" name="cnic_back" accept="image/*,.pdf" required>
+                        <div class="upload-icon"><i class="fas fa-id-card-alt"></i></div>
+                        <div class="upload-label">CNIC Back</div>
+                        <div class="upload-hint">Clear photo/scan</div>
+                        <span class="required-badge"><i class="fas fa-asterisk"></i> Required</span>
+                        <img class="file-preview" alt="Preview">
+                        <div class="file-name"></div>
+                    </div>
+                </div>
+                
+                <!-- Owner: Land Ownership Document -->
+                <div class="conditional-section active" id="ownerDocs">
+                    <div style="margin-top:1rem">
+                        <div class="docs-grid">
+                            <div class="upload-zone" data-field="land_ownership">
+                                <input type="file" name="land_ownership" accept="image/*,.pdf" id="landOwnershipInput">
+                                <div class="upload-icon"><i class="fas fa-landmark"></i></div>
+                                <div class="upload-label">Land Ownership Document</div>
+                                <div class="upload-hint">Registry / Fard / Allotment letter</div>
+                                <span class="required-badge"><i class="fas fa-asterisk"></i> Required for Owners</span>
+                                <img class="file-preview" alt="Preview">
+                                <div class="file-name"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tenant: NOC Document or Message -->
+                <div class="conditional-section" id="tenantDocs">
+                    <div style="margin-top:1rem">
+                        <p style="font-weight:600;margin-bottom:1rem;color:var(--text-primary)">
+                            <i class="fas fa-info-circle" style="color:var(--primary-color)"></i> 
+                            As a tenant, provide a NOC from the property owner. Upload a stamp paper OR write a message below.
+                        </p>
+                        <div class="docs-grid">
+                            <div class="upload-zone" data-field="noc_document">
+                                <input type="file" name="noc_document" accept="image/*,.pdf" id="nocDocInput">
+                                <div class="upload-icon"><i class="fas fa-stamp"></i></div>
+                                <div class="upload-label">NOC / Stamp Paper</div>
+                                <div class="upload-hint">Signed by property owner</div>
+                                <span class="required-badge" style="background:rgba(245,158,11,0.1);color:#f59e0b"><i class="fas fa-info-circle"></i> Optional if message provided</span>
+                                <img class="file-preview" alt="Preview">
+                                <div class="file-name"></div>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top:1rem">
+                            <label for="noc_message">
+                                <i class="fas fa-envelope-open-text"></i> NOC Message
+                            </label>
+                            <textarea class="noc-textarea" id="noc_message" name="noc_message" 
+                                      placeholder="Write NOC message here (e.g., 'I, [Owner Name], hereby grant permission to [Tenant Name] for installation of solar system at [Address]...')"></textarea>
+                            <small class="form-hint">Provide this if you don't have a stamp paper NOC</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Cost Estimation -->
                 <div class="form-section-title">
                     <i class="fas fa-calculator"></i> Cost Estimation
                 </div>
@@ -132,6 +392,63 @@
 
 {% block extra_js %}
 <script>
+    // Ownership toggle
+    const ownerRadio = document.getElementById('owner');
+    const tenantRadio = document.getElementById('tenant');
+    const ownerDocs = document.getElementById('ownerDocs');
+    const tenantDocs = document.getElementById('tenantDocs');
+    const landInput = document.getElementById('landOwnershipInput');
+    
+    function toggleOwnership() {
+        if (ownerRadio.checked) {
+            ownerDocs.classList.add('active');
+            tenantDocs.classList.remove('active');
+            landInput.setAttribute('required', '');
+        } else {
+            ownerDocs.classList.remove('active');
+            tenantDocs.classList.add('active');
+            landInput.removeAttribute('required');
+        }
+    }
+    
+    ownerRadio.addEventListener('change', toggleOwnership);
+    tenantRadio.addEventListener('change', toggleOwnership);
+    toggleOwnership();
+    
+    // File upload preview
+    document.querySelectorAll('.upload-zone input[type="file"]').forEach(input => {
+        input.addEventListener('change', function() {
+            const zone = this.closest('.upload-zone');
+            const preview = zone.querySelector('.file-preview');
+            const nameEl = zone.querySelector('.file-name');
+            
+            if (this.files && this.files[0]) {
+                const file = this.files[0];
+                zone.classList.add('has-file');
+                nameEl.textContent = '\u2713 ' + file.name;
+                
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    preview.style.display = 'none';
+                }
+            } else {
+                zone.classList.remove('has-file');
+            }
+        });
+        
+        const zone = input.closest('.upload-zone');
+        zone.addEventListener('dragover', function(e) { e.preventDefault(); zone.classList.add('dragover'); });
+        zone.addEventListener('dragleave', function() { zone.classList.remove('dragover'); });
+        zone.addEventListener('drop', function() { zone.classList.remove('dragover'); });
+    });
+    
+    // Capacity limits
     function updateCapacityLimits() {
         const type = document.getElementById('application_type').value;
         const capacityInput = document.getElementById('system_capacity');
@@ -152,18 +469,16 @@
             typeHint.textContent = '';
             capacityHint.textContent = 'Range: 1kW - 50kW';
         }
-        
         updateCostEstimate();
     }
     
     function updateCostEstimate() {
         const capacity = parseFloat(document.getElementById('system_capacity').value) || 0;
-        const costPerKw = 80000; // PKR per kW
+        const costPerKw = 80000;
         
         if (capacity > 0 && capacity <= 50) {
             const totalCost = capacity * costPerKw;
-            const annualSavings = capacity * 60000; // Approximate annual savings
-            
+            const annualSavings = capacity * 60000;
             document.getElementById('estimatedCost').textContent = 'PKR ' + totalCost.toLocaleString();
             document.getElementById('estimatedSavings').textContent = 'PKR ' + annualSavings.toLocaleString();
         } else {
@@ -189,6 +504,16 @@
             e.preventDefault();
             alert('System capacity must be between 1kW and 50kW');
             return false;
+        }
+        
+        if (tenantRadio.checked) {
+            const nocDoc = document.getElementById('nocDocInput').files.length > 0;
+            const nocMsg = document.getElementById('noc_message').value.trim();
+            if (!nocDoc && !nocMsg) {
+                e.preventDefault();
+                alert('Please provide either a NOC document or a NOC message');
+                return false;
+            }
         }
     });
 </script>

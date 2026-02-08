@@ -77,7 +77,7 @@
                         <tr>
                             <td><strong>{{ app.reference_number }}</strong></td>
                             <td>{{ app.user.full_name }}</td>
-                            <td>{{ app.application_type|title }} Metering</td>
+                            <td>{% if app.application_type == 'simple_solar' %}Solar Setup{% else %}{{ app.application_type|title }} Metering{% endif %}</td>
                             <td>{{ app.system_capacity }} kW</td>
                             <td>
                                 <span class="status-badge status-{{ app.status }}">
